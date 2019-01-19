@@ -4,11 +4,11 @@ Create a floating rainbow effect that moves across your keyboard!
 
 # Installation
 
-ensure build-essentials is installed:
+ensure build-essentials and php is installed:
 
 ```bash
 sudo apt update
-sudo apt install build-essential
+sudo apt install build-essential php-cli
 ```
 
 Then, just run `make install` from the root of this repo.
