@@ -72,7 +72,7 @@ foreach ( $sides as $file => &$side ) {
 	$side = new Side( $phase_red, $phase_grn, $phase_blu );
 }
 
-$frequency = $argc > 0 ? $argv[1] : 0.5;
+$frequency = $argc > 0 ? $argv[1] : 2;
 
 while ( true ) {
 	$time = microtime( true );

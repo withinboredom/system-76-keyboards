@@ -1,0 +1,7 @@
+[Unit]
+Description=System76 Keyboard Colors
+[Service]
+Type=Simple
+ExecStart=/usr/bin/php /opt/keyboard-colors/keyboard-color.php 2 # update every 2 seconds
+[Install]
+WantedBy=multi-user.target
