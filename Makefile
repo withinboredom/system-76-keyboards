@@ -5,7 +5,7 @@ SERVICE = keyboard-color.php
 UNIT = keyboard-colors.service
 SYSTEMD = /etc/systemd/system
 
-install: ${DESTINATION_DIR}/${SERVICE} ${SYSTEMD}/${UNIT}
+install-rainbow: ${DESTINATION_DIR}/${SERVICE} ${SYSTEMD}/${UNIT}
 	systemctl enable ${UNIT}
 	systemctl start ${UNIT}
 

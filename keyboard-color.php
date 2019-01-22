@@ -18,11 +18,8 @@ for ( $i = 0; $i < 256; $i ++ ) {
 	$number_system[] = strtoupper( $number );
 }
 
-class Side {
+abstract class Side {
 	private $color = [ '00', '00', '00' ];
-	private $r_phase;
-	private $b_phase;
-	private $g_phase;
 
 	private function Calculate( $number ) {
 		global $number_system;
@@ -30,7 +27,7 @@ class Side {
 			return $number;
 		}
 
-		return $number_system[ round( $number ) ];
+		return $number_system[ (int) round( $number ) ];
 	}
 
 	public function Color() {
@@ -48,6 +45,14 @@ class Side {
 	public function Blue( $hue = false ) {
 		return $hue === false ? $this->color[2] : $this->color[2] = $this->Calculate( $hue );
 	}
+
+	public abstract function Render( $time );
+}
+
+class RainbowSide extends Side {
+	private $r_phase;
+	private $b_phase;
+	private $g_phase;
 
 	public function __construct( $red_phase, $green_phase, $blue_phase ) {
 		$this->r_phase = $red_phase;
@@ -68,11 +73,40 @@ $sides = [
 	'/sys/class/leds/system76::kbd_backlight/color_right'  => null,
 ];
 
-foreach ( $sides as $file => &$side ) {
-	$side = new Side( $phase_red, $phase_grn, $phase_blu );
+// set some sane defaults
+$frequency = 2;
+$modes     = [ 'rainbow', 'monitor' ];
+$mode      = $modes[0];
+
+if ( $argc > 0 ) {
+	$next = 1;
+	while ( isset( $argv[ $next ] ) ) {
+		switch ( $argv[ $next ] ) {
+			case '--frequency':
+				$frequency = abs( intval( $argv[ $next + 1 ] ) );
+				if ( ! is_numeric( $frequency ) ) {
+					$frequency = 2;
+					echo "Invalid frequency: ${$argc[$next + 1]}, it must be a number!\n";
+				}
+				break;
+			case '--mode':
+				if ( in_array( $argv[ $next + 1 ], $modes ) ) {
+					$mode = $argv[ $next + 1 ];
+				}
+				break;
+		}
+		$next += 2;
+	}
 }
 
-$frequency = $argc > 1 ? $argv[1] : 2;
+foreach ( $sides as $file => &$side ) {
+	switch ( $mode ) {
+		case 'rainbow':
+			$side = new RainbowSide( $phase_red, $phase_grn, $phase_blu );
+			break;
+	}
+}
+
 
 while ( true ) {
 	$time = microtime( true );

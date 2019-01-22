@@ -11,7 +11,7 @@ sudo apt update
 sudo apt install build-essential php-cli
 ```
 
-Then, just run `make install` from the root of this repo.
+Then, just run `make install-rainbow` from the root of this repo.
 
 # Uninstall
 
