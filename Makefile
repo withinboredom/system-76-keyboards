@@ -4,8 +4,9 @@ DESTINATION_DIR = /opt/keyboard-colors
 SERVICE = keyboard-color.php
 UNIT = keyboard-colors.service
 SYSTEMD = /etc/systemd/system
+MODE ?= rainbow
 
-install-rainbow: ${DESTINATION_DIR}/${SERVICE} ${SYSTEMD}/${UNIT}
+install: ${DESTINATION_DIR}/${SERVICE} ${SYSTEMD}/${UNIT}
 	systemctl enable ${UNIT}
 	systemctl start ${UNIT}
 
@@ -16,7 +17,7 @@ ${DESTINATION_DIR}/${SERVICE}: ${DESTINATION_DIR}
 	cp ${SERVICE} ${DESTINATION_DIR}/${SERVICE}
 
 ${SYSTEMD}/${UNIT}:
-	cp ${UNIT} ${SYSTEMD}/${UNIT}
+	sed 's/MODE/${MODE}/' ${UNIT} > ${SYSTEMD}/${UNIT}
 
 uninstall:
 	systemctl stop ${UNIT}
