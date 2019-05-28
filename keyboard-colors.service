@@ -2,6 +2,6 @@
 Description=System76 Keyboard Colors
 [Service]
 Type=Simple
-ExecStart=/usr/bin/php /opt/keyboard-colors/keyboard-color.php --frequency 2 --mode MODE # update every 2 seconds
+ExecStart=/usr/bin/php /opt/keyboard-colors/keyboard-color.php --frequency .5 --mode MODE # update every 2 seconds
 [Install]
 WantedBy=multi-user.target
