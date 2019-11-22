@@ -2,6 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using CommandLine;
+using keyboards.Keyboards;
+using Monitor = keyboards.Keyboards.Monitor;
 
 namespace keyboards
 {
@@ -25,7 +27,8 @@ namespace keyboards
                         Console.WriteLine(Version);
                     }
 
-                    var kb = new Rainbow {Frequency = 0.05};
+                    //var kb = new Rainbow {Frequency = 0.05};
+                    var kb = new Monitor {Frequency = 0.05};
                     kb.Run(new CancellationToken()).Wait();
                 });
         }

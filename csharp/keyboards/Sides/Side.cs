@@ -1,5 +1,6 @@
 using System.IO;
 using System.Threading.Tasks;
+using keyboards.Sides;
 
 namespace keyboards
 {
@@ -11,7 +12,7 @@ namespace keyboards
         /// <summary>
         /// The file to read/save from
         /// </summary>
-        private readonly string _file;
+        private readonly string? _file;
 
         /// <summary>
         /// Commit this side to the hardware
@@ -20,7 +21,7 @@ namespace keyboards
         public Task Commit()
         {
             if(_file == null) return Task.CompletedTask;
-            var hex = CurrentColor.Hex;
+            var hex = CurrentColor?.Hex;
             return System.IO.File.WriteAllTextAsync(_file, hex);
         }
 
@@ -41,7 +42,7 @@ namespace keyboards
         /// <summary>
         /// The current color
         /// </summary>
-        public Color CurrentColor { get; set; }
+        public Color? CurrentColor { get; set; }
 
         /// <summary>
         /// Renders the side
@@ -59,6 +60,8 @@ namespace keyboards
             {
                 _file = filename;
             }
+
+            Load().Wait();
         }
     }
 }

@@ -1,10 +1,8 @@
 using System;
-using System.Diagnostics;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace keyboards
+namespace keyboards.Keyboards
 {
     /// <summary>
     /// Represents an entire keyboard
@@ -19,17 +17,17 @@ namespace keyboards
         /// <summary>
         /// The left side of the keyboard
         /// </summary>
-        protected Side Left { get; set; }
+        protected Side? Left { get; set; }
         
         /// <summary>
         /// The center side
         /// </summary>
-        protected Side Center { get; set; }
+        protected Side? Center { get; set; }
         
         /// <summary>
         /// The right side of the keyboard
         /// </summary>
-        protected Side Right { get; set; }
+        protected Side? Right { get; set; }
 
         /// <summary>
         /// Default location of the left side of the keyboard
@@ -69,7 +67,9 @@ namespace keyboards
                 var time = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
                 var timeToNext = (DateTime.Now + TimeSpan.FromSeconds(Frequency)) - DateTime.Now;
                 Render(time);
-                await Task.WhenAll(Left?.Commit(), Center?.Commit(), Right?.Commit());
+                await Task.WhenAll(Left == null ? Task.CompletedTask : Left.Commit(),
+                    Center == null ? Task.CompletedTask : Center.Commit(),
+                    Right == null ? Task.CompletedTask : Right.Commit());
                 await Task.Delay(timeToNext, token);
             }
         }

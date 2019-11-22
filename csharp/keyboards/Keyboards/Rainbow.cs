@@ -1,4 +1,4 @@
-namespace keyboards
+namespace keyboards.Keyboards
 {
     /// <summary>
     /// Represents a rainbow keyboard

@@ -1,4 +1,4 @@
-namespace keyboards
+namespace keyboards.Sides
 {
     /// <summary>
     /// Represents the side of a keyboard that can be a different color
@@ -8,7 +8,7 @@ namespace keyboards
         /// <summary>
         /// The current color of the side
         /// </summary>
-        Color CurrentColor { get; set; }
+        Color? CurrentColor { get; set; }
         
         /// <summary>
         /// Render the current color of the side to memory

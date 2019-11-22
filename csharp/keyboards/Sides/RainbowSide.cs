@@ -25,7 +25,7 @@ namespace keyboards
         /// <summary>
         /// A time shift
         /// </summary>
-        private readonly long _timeshift;
+        private readonly long _timeShift;
 
         /// <summary>
         /// Create a rainbow side
@@ -33,14 +33,14 @@ namespace keyboards
         /// <param name="redPhase"></param>
         /// <param name="greenPhase"></param>
         /// <param name="bluePhase"></param>
-        /// <param name="timeshift"></param>
+        /// <param name="timeShift"></param>
         /// <param name="filename"></param>
-        public RainbowSide(double redPhase, double greenPhase, double bluePhase, long timeshift, string filename) : base(filename)
+        public RainbowSide(double redPhase, double greenPhase, double bluePhase, long timeShift, string filename) : base(filename)
         {
             _redPhase = redPhase;
             _bluePhase = bluePhase;
             _greenPhase = greenPhase;
-            _timeshift = timeshift;
+            _timeShift = timeShift;
 
             Load().Wait();
         }
@@ -51,7 +51,9 @@ namespace keyboards
         /// <param name="time"></param>
         public override void Render(long time)
         {
-            time += _timeshift;
+            time += _timeShift;
+            if (CurrentColor == null) return;
+            
             CurrentColor.Red = (byte) ((Math.Sin(time * _redPhase) + 1) * 255 / 2);
             CurrentColor.Green = (byte) ((Math.Sin(time * _greenPhase) + 1) * 255 / 2);
             CurrentColor.Blue = (byte) ((Math.Sin(time * _bluePhase) + 1) * 255 / 2);
