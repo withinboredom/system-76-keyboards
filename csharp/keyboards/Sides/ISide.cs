@@ -1,3 +1,6 @@
+using System.Threading.Tasks;
+using keyboards.ColorSpace;
+
 namespace keyboards.Sides
 {
     /// <summary>
@@ -8,12 +11,13 @@ namespace keyboards.Sides
         /// <summary>
         /// The current color of the side
         /// </summary>
-        Color? CurrentColor { get; set; }
-        
+        Rgb CurrentColor { get; set; }
+
         /// <summary>
         /// Render the current color of the side to memory
         /// </summary>
         /// <param name="time">The current time</param>
-        void Render(long time);
+        /// <param name="deltaTime">The number of milliseconds since the last render</param>
+        Task Render(long time, long deltaTime);
     }
 }

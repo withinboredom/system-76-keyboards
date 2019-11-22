@@ -1,4 +1,6 @@
 using System;
+using System.Threading.Tasks;
+using keyboards.ColorSpace;
 
 namespace keyboards.Sides
 {
@@ -17,7 +19,7 @@ namespace keyboards.Sides
 
         protected abstract double GetValue();
 
-        public override void Render(long time)
+        public override async Task Render(long time, long deltaTime)
         {
             var value = GetValue();
             if (value < 0) value = 0;
@@ -27,27 +29,32 @@ namespace keyboards.Sides
 
             if (value < _green)
             {
-                CurrentColor.Blue = (byte) Math.Floor((1 - (value / _green)) * 255);
-                CurrentColor.Green = (byte) Math.Floor(value / _green * 255);
-                CurrentColor.Red = 0;
+                CurrentColor = new Rgb(
+                    0,
+                    (byte) Math.Floor(value / _green * 255),
+                    (byte) Math.Floor((1 - value / _green) * 255)
+                );
+
             }
             else if (value >= _green && value < _yellow)
             {
-                CurrentColor.Green = 255;
-                CurrentColor.Red = (byte) Math.Floor((value - _green) / (_yellow - _green) * 255);
-                CurrentColor.Blue = 0;
+                CurrentColor = new Rgb(
+                    (byte) Math.Floor((value - _green) / (_yellow - _green) * 255),
+                    255,
+                    0
+                );
             } 
             else if (value >= _yellow && value < _red)
             {
-                CurrentColor.Red = 255;
-                CurrentColor.Blue = 0;
-                CurrentColor.Green = (byte) Math.Floor(1 - (value - _yellow) / (_red - _yellow) * 255);
+                CurrentColor = new Rgb(
+                    255,
+                    (byte) Math.Floor(1 - (value - _yellow) / (_red - _yellow) * 255),
+                    0
+                );
             } 
             else if (value >= _red)
             {
-                CurrentColor.Red = 255;
-                CurrentColor.Blue = 0;
-                CurrentColor.Green = 0;
+                CurrentColor = new Rgb(255, 0, 0);
             }
         }
     }

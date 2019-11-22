@@ -1,5 +1,9 @@
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using keyboards.ColorSpace;
+using keyboards.Filters;
 using keyboards.Sides;
 
 namespace keyboards
@@ -18,11 +22,14 @@ namespace keyboards
         /// Commit this side to the hardware
         /// </summary>
         /// <returns></returns>
-        public Task Commit()
+        public Task Commit(IEnumerable<IFilter> filters)
         {
             if(_file == null) return Task.CompletedTask;
-            var hex = CurrentColor?.Hex;
-            return System.IO.File.WriteAllTextAsync(_file, hex);
+
+            var commitColor = filters.Aggregate(CurrentColor, (current, filter) => filter.ApplyFilter(current));
+
+            var hex = commitColor.Hex;
+            return File.WriteAllTextAsync(_file, hex);
         }
 
         /// <summary>
@@ -33,22 +40,20 @@ namespace keyboards
         {
             if (_file == null) return;
             var hex = await System.IO.File.ReadAllTextAsync(_file);
-            var red = Color.FromHex(hex.Substring(0,2));
-            var gre = Color.FromHex(hex.Substring(2, 2));
-            var blu = Color.FromHex(hex.Substring(4, 2));
-            CurrentColor = new Color {Red = red, Green = gre, Blue = blu};
+            CurrentColor = Rgb.FromHex(hex);
         }
 
         /// <summary>
         /// The current color
         /// </summary>
-        public Color? CurrentColor { get; set; }
+        public Rgb CurrentColor { get; set; }
 
         /// <summary>
         /// Renders the side
         /// </summary>
         /// <param name="time"></param>
-        public abstract void Render(long time);
+        /// <param name="deltaTime"></param>
+        public abstract Task Render(long time, long deltaTime);
 
         /// <summary>
         /// Creates a new side

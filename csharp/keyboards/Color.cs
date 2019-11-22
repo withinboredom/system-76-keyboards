@@ -22,19 +22,27 @@ namespace keyboards
         /// </summary>
         public byte Blue { get; set; }
 
-        /// <summary>
-        /// Convert a hex string into a color
-        /// </summary>
-        /// <param name="hex">The hex string</param>
-        /// <returns>A color</returns>
-        public static byte FromHex(string hex)
+        private double sRGBToLin(double colorChannel)
         {
-            return Convert.ToByte("0x" + hex, 16);
+            if (colorChannel <= 0.04045D)
+            {
+                return colorChannel / 12.92D;
+            }
+
+            return Math.Pow((colorChannel + 0.055D) / 1.055D, 2.4D);
         }
 
-        /// <summary>
-        /// The hex string of this color
-        /// </summary>
-        public string Hex => Red.ToString("X2") + Green.ToString("X2") + Blue.ToString("X2");
+        public double Luminance
+        {
+            get
+            {
+                var vR = Red / 255D;
+                var vG = Green / 255D;
+                var vB = Blue / 255D;
+
+                var y = 0.2126D * sRGBToLin(vR) + 0.7152D * sRGBToLin(vG) + 0.0722D * sRGBToLin(vB);
+                return y;
+            }
+        }
     }
 }

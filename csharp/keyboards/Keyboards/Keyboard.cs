@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using keyboards.Filters;
 
 namespace keyboards.Keyboards
 {
@@ -9,11 +11,19 @@ namespace keyboards.Keyboards
     /// </summary>
     public class Keyboard
     {
+        private IFilter[] _filters = new IFilter[] {};
+
         /// <summary>
         /// The update frequency
         /// </summary>
         public double Frequency { get; set; }
-        
+
+        public IFilter[] Filters
+        {
+            get => _filters;
+            set => _filters = value;
+        }
+
         /// <summary>
         /// The left side of the keyboard
         /// </summary>
@@ -48,11 +58,11 @@ namespace keyboards.Keyboards
         /// Renders a keyboard
         /// </summary>
         /// <param name="time">The current time in milliseconds</param>
-        private void Render(long time)
+        private async Task Render(long time, long deltaTime)
         {
-            Left?.Render(time);
-            Center?.Render(time);
-            Right?.Render(time);
+            await Task.WhenAll(Left == null ? Task.CompletedTask : Left.Render(time, deltaTime),
+                Center == null ? Task.CompletedTask : Center.Render(time, deltaTime),
+                Right == null ? Task.CompletedTask : Right.Render(time, deltaTime));
         }
 
         /// <summary>
@@ -62,14 +72,15 @@ namespace keyboards.Keyboards
         /// <returns></returns>
         public async Task Run(CancellationToken token)
         {
+            var lastTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
             while (!token.IsCancellationRequested)
             {
                 var time = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
                 var timeToNext = (DateTime.Now + TimeSpan.FromSeconds(Frequency)) - DateTime.Now;
-                Render(time);
-                await Task.WhenAll(Left == null ? Task.CompletedTask : Left.Commit(),
-                    Center == null ? Task.CompletedTask : Center.Commit(),
-                    Right == null ? Task.CompletedTask : Right.Commit());
+                await Render(time, time - lastTime);
+                await Task.WhenAll(Left == null ? Task.CompletedTask : Left.Commit(Filters),
+                    Center == null ? Task.CompletedTask : Center.Commit(new IFilter[]{}),
+                    Right == null ? Task.CompletedTask : Right.Commit(Filters));
                 await Task.Delay(timeToNext, token);
             }
         }

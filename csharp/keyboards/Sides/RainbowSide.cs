@@ -1,4 +1,6 @@
 using System;
+using System.Threading.Tasks;
+using keyboards.ColorSpace;
 
 namespace keyboards
 {
@@ -49,14 +51,16 @@ namespace keyboards
         /// Render the rainbow!
         /// </summary>
         /// <param name="time"></param>
-        public override void Render(long time)
+        public override async Task Render(long time, long deltaTime)
         {
             time += _timeShift;
             if (CurrentColor == null) return;
-            
-            CurrentColor.Red = (byte) ((Math.Sin(time * _redPhase) + 1) * 255 / 2);
-            CurrentColor.Green = (byte) ((Math.Sin(time * _greenPhase) + 1) * 255 / 2);
-            CurrentColor.Blue = (byte) ((Math.Sin(time * _bluePhase) + 1) * 255 / 2);
+
+            CurrentColor = new Rgb(
+                (byte) ((Math.Sin(time * _redPhase) + 1) * 255 / 2),
+                (byte) ((Math.Sin(time * _greenPhase) + 1) * 255 / 2),
+                (byte) ((Math.Sin(time * _bluePhase) + 1) * 255 / 2)
+            );
         }
     }
 }
