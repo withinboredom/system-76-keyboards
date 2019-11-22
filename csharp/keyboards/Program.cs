@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using CommandLine;
+using keyboards.ColorSpace;
 using keyboards.Filters;
 using keyboards.Keyboards;
 using Monitor = keyboards.Keyboards.Monitor;
@@ -28,7 +29,8 @@ namespace keyboards
                         Console.WriteLine(Version);
                     }
 
-                    var kb = new Rainbow {Frequency = 0.05, Filters = new IFilter[] {new BreatheFilter()}};
+                    //var kb = new Rainbow {Frequency = 0.05, Filters = new IFilter[] {new BreatheFilter()}};
+                    var kb = new SolidColor(Rgb.FromHex("FFFFFF")) {Frequency = 0.016, Filters = new []{new HeartFilter(), }};
                     //var kb = new Monitor {Frequency = 0.05};
                     kb.Run(new CancellationToken()).Wait();
                 });

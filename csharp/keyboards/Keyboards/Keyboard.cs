@@ -75,13 +75,15 @@ namespace keyboards.Keyboards
             var lastTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
             while (!token.IsCancellationRequested)
             {
-                var time = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-                var timeToNext = (DateTime.Now + TimeSpan.FromSeconds(Frequency)) - DateTime.Now;
+                var startRender = DateTime.Now;
+                var time = startRender.Ticks / TimeSpan.TicksPerMillisecond;
                 await Render(time, time - lastTime);
-                await Task.WhenAll(Left == null ? Task.CompletedTask : Left.Commit(Filters),
-                    Center == null ? Task.CompletedTask : Center.Commit(new IFilter[]{}),
-                    Right == null ? Task.CompletedTask : Right.Commit(Filters));
-                await Task.Delay(timeToNext, token);
+                await Task.WhenAll(Left == null ? Task.CompletedTask : Left.Commit(Filters, time),
+                    Center == null ? Task.CompletedTask : Center.Commit(_filters, time),
+                    Right == null ? Task.CompletedTask : Right.Commit(Filters, time));
+                var timeToNext = (startRender + TimeSpan.FromSeconds(Frequency)) - DateTime.Now;
+                if(timeToNext.Ticks > 0)
+                    await Task.Delay(timeToNext, token);
             }
         }
     }

@@ -4,6 +4,6 @@ namespace keyboards.Filters
 {
     public interface IFilter
     {
-        Rgb ApplyFilter(Rgb color);
+        Rgb ApplyFilter(Rgb color, long ms);
     }
 }
