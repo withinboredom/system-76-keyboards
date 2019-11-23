@@ -23,9 +23,11 @@ namespace keyboards
             public enum Filters
             {
                 Heartbeat,
+                WashedOut,
+                BlackWhite,
             }
             
-            [Option('f', "filter", Required = false, HelpText = "Specify a filter to use")]
+            [Option('f', "filter", Required = false, HelpText = "Specify a filter to use", Separator = ',')]
             public IEnumerable<Filters> Filter { get; set; }
             
             [Option('h', "frequency", Required = false, Default = 0.25, HelpText = "Determine the delay between frames")]
@@ -68,6 +70,12 @@ namespace keyboards
                 {
                     case Options.Filters.Heartbeat:
                         arr.Add(new HeartFilter());
+                        break;
+                    case Options.Filters.WashedOut:
+                        arr.Add(new WashedOut());
+                        break;
+                    case Options.Filters.BlackWhite:
+                        arr.Add(new BlackWhite());
                         break;
                 }
             }

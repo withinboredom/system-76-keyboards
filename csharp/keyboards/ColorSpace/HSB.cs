@@ -33,6 +33,16 @@ namespace keyboards.ColorSpace
             return new Hsb(Hue, Saturation, b);
         }
 
+        public Hsb SetSaturation(double s)
+        {
+            return new Hsb(Hue, s, Brightness);
+        }
+
+        public Hsb SetHue(double h)
+        {
+            return new Hsb(h, Saturation, Brightness);
+        }
+
         public Hsb(double h, double s, double b)
         {
             Hue = h % 360D;
