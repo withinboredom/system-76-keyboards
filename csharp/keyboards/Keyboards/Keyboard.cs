@@ -70,7 +70,7 @@ namespace keyboards.Keyboards
         /// </summary>
         /// <param name="token">A cancellation token to stop</param>
         /// <returns></returns>
-        public async Task Run(CancellationToken token)
+        public async Task<int> Run(CancellationToken token)
         {
             var lastTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
             while (!token.IsCancellationRequested)
@@ -85,6 +85,8 @@ namespace keyboards.Keyboards
                 if(timeToNext.Ticks > 0)
                     await Task.Delay(timeToNext, token);
             }
+
+            return 0;
         }
     }
 }

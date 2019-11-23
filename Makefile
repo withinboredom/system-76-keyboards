@@ -1,32 +1,7 @@
-.PHONY: install
+.PHONY:
 
-DESTINATION_DIR = /opt/keyboard-colors
-SERVICE = keyboard-color.php
-UNIT = keyboard-colors.service
-SYSTEMD = /etc/systemd/system
-MODE ?= rainbow
+SERVICE = keyboard-color
 
-install: ${DESTINATION_DIR}/${SERVICE} ${SYSTEMD}/${UNIT}
-	systemctl enable ${UNIT}
-	systemctl start ${UNIT}
-
-${DESTINATION_DIR}:
-	mkdir -p ${DESTINATION_DIR}
-
-${DESTINATION_DIR}/${SERVICE}: ${DESTINATION_DIR}
-	cp ${SERVICE} ${DESTINATION_DIR}/${SERVICE}
-
-${SYSTEMD}/${UNIT}:
-	sed 's/MODE/${MODE}/' ${UNIT} > ${SYSTEMD}/${UNIT}
-
-uninstall:
-	systemctl stop ${UNIT}
-	systemctl disable ${UNIT}
-	rm -rf ${DESTINATION_DIR}
-	rm -f ${SYSTEMD}/${UNIT}
-
-start:
-	systemctl start ${UNIT}
-
-stop:
-	systemctl stop ${UNIT}
+${SERVICE}:
+	cd csharp/keyboards && dotnet publish -r linux-x64 -c Release -o ${SERVICE}
+	mv csharp/keyboards/${SERVICE} ${SERVICE}
