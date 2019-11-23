@@ -4,7 +4,6 @@ Create a floating rainbow effect that moves across your keyboard!
 
 # Installation
 
-1. Ensure you have [dotnet 3 installed](https://dotnet.microsoft.com/download/linux-package-manager/runtime-current).
 1. Download the [latest and greatest](https://github.com/withinboredom/system-76-keyboards/releases)
 1. Make it executable: `chmod +x ./keyboard-color`
 1. Take it on a test drive: `sudo ./keyboard-color rainbow`
