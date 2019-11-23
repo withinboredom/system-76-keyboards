@@ -4,16 +4,24 @@ using System.Linq;
 
 namespace keyboards
 {
-    public class Installer
+    public static class Installer
     {
         internal static void CreateParametersFromOptions(string[] options)
         {
-            parameters = string.Join(' ', options.Where(s => !s.Contains("--install") || !s.Contains("-i")).ToArray());
+            Parameters = string.Join(' ', options.Where(s => !s.Contains("--install") || !s.Contains("-i")).ToArray());
         }
 
         internal static void PutMeInRightSpot()
         {
-            var path = System.Reflection.Assembly.GetEntryAssembly()?.Location;
+            var command = Environment.GetCommandLineArgs()[0];
+            var path = Environment.CurrentDirectory + "/keyboard-color";
+
+            if (!File.Exists(path))
+            {
+                Console.WriteLine("Unable to locate `keyboard-color` in the current directory.");
+                Environment.Exit(1);
+            }
+            
             Console.WriteLine($"Copying {path} to /usr/local/bin");
             File.Copy(path, "/usr/local/bin/keyboard-color", true);
 
@@ -34,7 +42,7 @@ namespace keyboards
             if (yn.Key == ConsoleKey.Y)
             {
                 Console.WriteLine("Executing: systemctl enable keyboard-colors.service");
-                System.Diagnostics.Process.Start("systemctl", "enable keyboard-colors.service").WaitForExit();
+                System.Diagnostics.Process.Start("systemctl", "enable keyboard-colors.service")?.WaitForExit();
             }
 
             Console.WriteLine("Would you like to start the service now? (y/n)");
@@ -42,20 +50,20 @@ namespace keyboards
             if (yn.Key == ConsoleKey.Y)
             {
                 Console.WriteLine("Executing: systemctl restart keyboard-colors.service");
-                System.Diagnostics.Process.Start("systemctl", "restart keyboard-colors.service").WaitForExit();
+                System.Diagnostics.Process.Start("systemctl", "restart keyboard-colors.service")?.WaitForExit();
             }
         }
-        
-        public static string parameters { get; set; }
-        
-        public static string SystemD
+
+        private static string Parameters { get; set; }
+
+        private static string SystemD
         {
             get => $@"
 [Unit]
 Description=System76 Keyboard Colors
 [Service]
 Type=Simple
-ExecStart=/usr/local/bin/keyboard-color {parameters}
+ExecStart=/usr/local/bin/keyboard-color {Parameters}
 [Install]
 WantedBy=multi-user.target
 ";
