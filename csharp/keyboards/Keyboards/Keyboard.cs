@@ -11,18 +11,12 @@ namespace keyboards.Keyboards
     /// </summary>
     public class Keyboard
     {
-        private IFilter[] _filters = new IFilter[] {};
-
         /// <summary>
         /// The update frequency
         /// </summary>
         public double Frequency { get; set; }
 
-        public IFilter[] Filters
-        {
-            get => _filters;
-            set => _filters = value;
-        }
+        public IFilter[] Filters { get; set; } = new IFilter[] {};
 
         /// <summary>
         /// The left side of the keyboard
@@ -58,6 +52,7 @@ namespace keyboards.Keyboards
         /// Renders a keyboard
         /// </summary>
         /// <param name="time">The current time in milliseconds</param>
+        /// <param name="deltaTime"></param>
         private async Task Render(long time, long deltaTime)
         {
             await Task.WhenAll(Left == null ? Task.CompletedTask : Left.Render(time, deltaTime),
@@ -78,9 +73,13 @@ namespace keyboards.Keyboards
                 var startRender = DateTime.Now;
                 var time = startRender.Ticks / TimeSpan.TicksPerMillisecond;
                 await Render(time, time - lastTime);
-                await Task.WhenAll(Left == null ? Task.CompletedTask : Left.Commit(Filters, time),
-                    Center == null ? Task.CompletedTask : Center.Commit(_filters, time),
-                    Right == null ? Task.CompletedTask : Right.Commit(Filters, time));
+                foreach (var filter in Filters)
+                {
+                    await filter.PreApply(time);
+                }
+                await Task.WhenAll(Left == null ? Task.CompletedTask : Left.Commit(Filters),
+                    Center == null ? Task.CompletedTask : Center.Commit(Filters),
+                    Right == null ? Task.CompletedTask : Right.Commit(Filters));
                 var timeToNext = (startRender + TimeSpan.FromSeconds(Frequency)) - DateTime.Now;
                 if(timeToNext.Ticks > 0)
                     await Task.Delay(timeToNext, token);

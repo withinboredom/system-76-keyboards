@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using keyboards.ColorSpace;
 using keyboards.Monitors;
 using keyboards.Sides;
@@ -13,12 +14,11 @@ namespace keyboards.Filters
         private DateTime _currentUpdate;
         private readonly IMonitor _monitor;
         private readonly MovingAverage _average;
-        private byte _counter = 0;
         private double _lastMeasure;
-        private double[] _steps;
+        private readonly double[] _steps;
         private int _currentStep;
 
-        private double[] _waitTable = new[]
+        private readonly double[] _waitTable = new[]
         {
             0.05,
             0.04, 
@@ -66,24 +66,25 @@ namespace keyboards.Filters
             _currentStep = 0;
         }
 
-        // todo: Clean this up
-        public Rgb ApplyFilter(Rgb color, long ms)
+        public Task PreApply(long time)
         {
-            if (_counter == 0)
-            {
-                _lastMeasure = _average.GetAverage(_monitor.Percentage) / 100D;
-                _currentUpdate = DateTime.Now;
+            _lastMeasure = _average.GetAverage(_monitor.Percentage) / 100D;
+            _currentUpdate = DateTime.Now;
 
-                _lastMeasure = _lastMeasure == 1 ? .99D : _lastMeasure;
-                var currentWait = _waitTable[(int) (_waitTable.Length * _lastMeasure)];
-                var frames = (_currentUpdate - _lastUpdate).Seconds / currentWait;
-                if (_lastUpdate + TimeSpan.FromSeconds(currentWait) <= _currentUpdate)
-                {
-                    _currentStep = (_currentStep + (int) Math.Max(frames, 1)) % _steps.Length;
-                    _lastUpdate = _currentUpdate;
-                }
+            _lastMeasure = _lastMeasure >= 1 ? .99D : _lastMeasure;
+            var currentWait = _waitTable[(int) (_waitTable.Length * _lastMeasure)];
+            var frames = (_currentUpdate - _lastUpdate).Seconds / currentWait;
+            if (_lastUpdate + TimeSpan.FromSeconds(currentWait) <= _currentUpdate)
+            {
+                _currentStep = (_currentStep + (int) Math.Max(frames, 1)) % _steps.Length;
+                _lastUpdate = _currentUpdate;
             }
 
+            return Task.CompletedTask;
+        }
+
+        public async Task<Rgb> ApplyFilter(Rgb color)
+        {
             var brightness = _steps[_currentStep];
             
             var c = new Hsb(color);
@@ -91,9 +92,7 @@ namespace keyboards.Filters
             var newBrightness = c.Brightness * brightness;
             
             var next = new Rgb(c.SetBrightness(newBrightness));
-            
-            _counter = (byte) ((_counter + 1) % 3);
-
+         
             return next;
         }
     }

@@ -22,14 +22,18 @@ namespace keyboards
         /// Commit this side to the hardware
         /// </summary>
         /// <returns></returns>
-        public Task Commit(IEnumerable<IFilter> filters, long time)
+        public async Task Commit(IEnumerable<IFilter> filters)
         {
-            if(_file == null) return Task.CompletedTask;
+            if(_file == null) return;
 
-            var commitColor = filters.Aggregate(CurrentColor, (current, filter) => filter.ApplyFilter(current, time));
+            var commitColor = CurrentColor;
+            foreach (var filter in filters)
+            {
+                commitColor = await filter.ApplyFilter(commitColor);
+            }
 
             var hex = commitColor.Hex;
-            return File.WriteAllTextAsync(_file, hex);
+            await File.WriteAllTextAsync(_file, hex);
         }
 
         /// <summary>
