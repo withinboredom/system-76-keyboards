@@ -96,10 +96,18 @@ namespace keyboards
                     Console.WriteLine("The service is already running, did you mean to start it again? Hint: `keyboard-color stop`");
                     Environment.Exit(1);
                 }
+
+                try
+                {
+                    return kb.Run(_token).Result;
+                }
+                catch (AggregateException _)
+                {
+                    // yep, we know.
+                    return 1;
+                }
             }
-            
-            if (!options.Install) return kb.Run(_token).Result;
-            
+
             Installer.CreateParametersFromOptions(args);
             Installer.PutMeInRightSpot();
             Installer.CreateService();
@@ -115,6 +123,7 @@ namespace keyboards
             {
                 source.Cancel();
                 File.Delete(PidFile);
+                eventArgs.Cancel = true;
             };
 
             AppDomain.CurrentDomain.ProcessExit += (sender, eventArgs) =>
