@@ -13,8 +13,10 @@ namespace keyboards
 
         internal static void PutMeInRightSpot()
         {
-            var command = Environment.GetCommandLineArgs()[0];
             var path = Environment.CurrentDirectory + "/keyboard-color";
+
+            if (!File.Exists(path) && File.Exists("/usr/local/bin/keyboard-color"))
+                return;
 
             if (!File.Exists(path))
             {
@@ -63,7 +65,8 @@ namespace keyboards
 Description=System76 Keyboard Colors
 [Service]
 Type=Simple
-ExecStart=/usr/local/bin/keyboard-color {Parameters}
+ExecStart=/usr/local/bin/keyboard-color {Parameters} --service
+PIDFile=keyboard-colors.pid
 [Install]
 WantedBy=multi-user.target
 ";

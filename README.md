@@ -4,30 +4,50 @@ Create a floating rainbow effect that moves across your keyboard!
 
 # Installation
 
-ensure build-essentials and php is installed:
+1. Ensure you have [dotnet 3 installed](https://dotnet.microsoft.com/download/linux-package-manager/runtime-current).
+1. Download the [latest and greatest](https://github.com/withinboredom/system-76-keyboards/releases)
+1. Make it executable: `chmod +x ./keyboard-color`
+1. Take it on a test drive: `sudo ./keyboard-color rainbow`
+1. Get some help: `sudo ./keyboard-color help`
+1. Once you've got it how you like it, run it with `--install`, like `sudo ./keyboard-color rainbow --install`
+1. Profit! 
 
-```bash
-sudo apt update
-sudo apt install build-essential php-cli
-```
+## Changing modes
 
-Then, just run `sudo make install` from the root of this repo.
+- `keyboard-color rainbow --install`
+- or `echo yy | keyboard-color monitor --install` for a non-interactive experience
 
-# Specifying a mode
-
-There's three modes:
-
-1. `sudo MODE=rainbow make install`: Creates a moving rainbow effect on the keyboard
-2. `sudo MODE=monitor make install`: Left: CPU, Center: Memory usage, Right: Disk activity
-3. `sudo MODE=load make install`: Left: 1min, Center: 5min, Right: 10min load average
-
-## Colors for `monitor` and `load`
+## Colors for `monitor`
 
 - Blue: Ice cold (~0)
 - Green: Moderate usage
 - Yellow: Heavy usage
 - Red: Extreme usage
 
+# Upgrading
+
+Same as installation, should be smooth.
+
 # Uninstall
 
-Uninstallation is as easy as `make uninstall`
+```sh
+sudo systemctl stop keyboard-color
+sudo systemctl disable keyboard-color
+sudo rm -f /usr/local/bin/keyboard-color /etc/systemd/system/keyboard-colors.service
+```
+
+# Contributing
+
+The service is written in CSharp. You can do the following:
+
+1. Create color filters (such as Hearbeat) that can post-process on whatever mode is chosen.
+1. Create "sides" that operate on a single Led group independently.
+1. Create monitors to operate on a specific input.
+1. Keyboards tie everything together into a configuration.
+
+## Ideas
+
+1. Change colors based on local weather and a filter for time of day.
+1. Use filters to change color if ssh'd into a specific machine (say, production?).
+1. Use filters to alert on emails, or other notifications.
+1. Make this more pluggable.
