@@ -3,22 +3,22 @@ using System;
 namespace keyboards.ColorSpace
 {
     /// <summary>
-    /// Represents the HSB color space
+    ///     Represents the HSB color space
     /// </summary>
     public struct Hsb
     {
         /// <summary>
-        /// Undefined color / black
+        ///     Undefined color / black
         /// </summary>
         public static readonly Hsb Empty = new Hsb();
 
         /// <summary>
-        /// Tolerance for comparing two colors
+        ///     Tolerance for comparing two colors
         /// </summary>
         private const double Tolerance = 0.0000001;
 
         /// <summary>
-        /// True if two colors are the same.
+        ///     True if two colors are the same.
         /// </summary>
         /// <param name="i1">The left</param>
         /// <param name="i2">The right</param>
@@ -31,7 +31,7 @@ namespace keyboards.ColorSpace
         }
 
         /// <summary>
-        /// True if two colors are not the same
+        ///     True if two colors are not the same
         /// </summary>
         /// <param name="i1">The left</param>
         /// <param name="i2">The right</param>
@@ -44,22 +44,22 @@ namespace keyboards.ColorSpace
         }
 
         /// <summary>
-        /// The hue of the color
+        ///     The hue of the color
         /// </summary>
         public double Hue { get; }
 
         /// <summary>
-        /// The saturation of the color
+        ///     The saturation of the color
         /// </summary>
         public double Saturation { get; }
 
         /// <summary>
-        /// The brightness of the color
+        ///     The brightness of the color
         /// </summary>
         public double Brightness { get; }
 
         /// <summary>
-        /// Get a new color after adjusting the brightness
+        ///     Get a new color after adjusting the brightness
         /// </summary>
         /// <param name="brightness">The new brightness</param>
         /// <returns>A new color with the brightness adjusted</returns>
@@ -69,7 +69,7 @@ namespace keyboards.ColorSpace
         }
 
         /// <summary>
-        /// Get a new color after adjusting the saturation
+        ///     Get a new color after adjusting the saturation
         /// </summary>
         /// <param name="saturation">The new saturation</param>
         /// <returns>A new color with the saturation adjusted</returns>
@@ -77,9 +77,9 @@ namespace keyboards.ColorSpace
         {
             return new Hsb(Hue, saturation, Brightness);
         }
-        
+
         /// <summary>
-        /// Get a new color after adjusting the hue
+        ///     Get a new color after adjusting the hue
         /// </summary>
         /// <param name="hue">The new hue</param>
         /// <returns>A new color with the hue adjusted</returns>
@@ -89,7 +89,7 @@ namespace keyboards.ColorSpace
         }
 
         /// <summary>
-        /// Create a new HSB color
+        ///     Create a new HSB color
         /// </summary>
         /// <param name="hue">The hue</param>
         /// <param name="saturation">The saturation</param>
@@ -102,7 +102,7 @@ namespace keyboards.ColorSpace
         }
 
         /// <summary>
-        /// Create a new HSB color from another HSB color
+        ///     Create a new HSB color from another HSB color
         /// </summary>
         /// <param name="other">The color to copy</param>
         public Hsb(Hsb other)
@@ -113,7 +113,7 @@ namespace keyboards.ColorSpace
         }
 
         /// <summary>
-        /// Create a new HSB color from an RGB color space
+        ///     Create a new HSB color from an RGB color space
         /// </summary>
         /// <param name="other">The color to copy</param>
         public Hsb(Rgb other)
@@ -121,7 +121,7 @@ namespace keyboards.ColorSpace
             var r = other.Red / 255D;
             var g = other.Green / 255D;
             var b = other.Blue / 255D;
-            
+
             var max = Math.Max(r, Math.Max(g, b));
             var min = Math.Min(r, Math.Min(g, b));
             var delMax = max - min;
@@ -143,9 +143,18 @@ namespace keyboards.ColorSpace
                 var delG = ((max - g) / 6D + delMax / 2D) / delMax;
                 var delB = ((max - b) / 6D + delMax / 2D) / delMax;
 
-                if (r == max) hue = delB - delG;
-                else if (g == max) hue = 1D / 3D + delR - delB;
-                else if (b == max) hue = 2D / 3D + delG - delR;
+                if (r == max)
+                {
+                    hue = delB - delG;
+                }
+                else if (g == max)
+                {
+                    hue = 1D / 3D + delR - delB;
+                }
+                else if (b == max)
+                {
+                    hue = 2D / 3D + delG - delR;
+                }
                 else
                 {
                     hue = 0;
@@ -161,7 +170,7 @@ namespace keyboards.ColorSpace
         }
 
         /// <summary>
-        /// True if two colors are identical
+        ///     True if two colors are identical
         /// </summary>
         /// <param name="obj">The object to compare to</param>
         /// <returns>True if the object is a color and the same color</returns>
@@ -173,14 +182,14 @@ namespace keyboards.ColorSpace
         }
 
         /// <summary>
-        /// Calculate the hash code of this color
+        ///     Calculate the hash code of this color
         /// </summary>
         /// <returns></returns>
         public override int GetHashCode()
         {
             return Hue.GetHashCode() ^ Saturation.GetHashCode() ^ Brightness.GetHashCode();
         }
-        
+
         public override string ToString()
         {
             return Hue + "°, " + Saturation * 100D + "%, " + Brightness * 100D + "%";

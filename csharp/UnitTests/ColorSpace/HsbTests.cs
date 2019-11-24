@@ -15,8 +15,8 @@ namespace UnitTests.ColorSpace
         [Test]
         public void CanCompareColors()
         {
-            var c1 = new Hsb(0,0,1);
-            var c2 = new Hsb(0,0,1);
+            var c1 = new Hsb(0, 0, 1);
+            var c2 = new Hsb(0, 0, 1);
             Assert.IsTrue(c1 == c2);
             Assert.IsFalse(c1 != c2);
             Assert.AreEqual(c1.GetHashCode(), c2.GetHashCode());
@@ -33,7 +33,7 @@ namespace UnitTests.ColorSpace
         [Test]
         public void CanConvertRgb()
         {
-            var c1 = new Hsb(new Rgb(38,33,33));
+            var c1 = new Hsb(new Rgb(38, 33, 33));
             Assert.AreEqual(c1, new Hsb(0, 0.13157894D, 0.14901960D));
         }
     }

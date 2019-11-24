@@ -37,5 +37,13 @@ namespace UnitTests.ColorSpace
             var expected = new Rgb(38, 33, 33);
             Assert.AreEqual(expected, new Rgb(color));
         }
+
+        [Test]
+        public void CanConvertHex()
+        {
+            var color = Rgb.FromHex("FF00FF");
+            Assert.AreEqual(new Rgb(255, 0, 255), color);
+            Assert.AreEqual("FF00FF", color.Hex);
+        }
     }
 }

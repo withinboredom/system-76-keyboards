@@ -3,17 +3,17 @@ using System;
 namespace keyboards.ColorSpace
 {
     /// <summary>
-    /// Represents a color in the RGB Space
+    ///     Represents a color in the RGB Space
     /// </summary>
     public struct Rgb
     {
         /// <summary>
-        /// An undefined color / black
+        ///     An undefined color / black
         /// </summary>
         public static readonly Rgb Empty = new Rgb();
 
         /// <summary>
-        /// True if two colors are the same color
+        ///     True if two colors are the same color
         /// </summary>
         /// <param name="i1">Left</param>
         /// <param name="i2">Right</param>
@@ -26,7 +26,7 @@ namespace keyboards.ColorSpace
         }
 
         /// <summary>
-        /// True if two colors are not the same
+        ///     True if two colors are not the same
         /// </summary>
         /// <param name="i1">Left</param>
         /// <param name="i2">Right</param>
@@ -39,22 +39,22 @@ namespace keyboards.ColorSpace
         }
 
         /// <summary>
-        /// The red component
+        ///     The red component
         /// </summary>
         public byte Red { get; }
-        
+
         /// <summary>
-        /// The green component
+        ///     The green component
         /// </summary>
         public byte Green { get; }
-        
+
         /// <summary>
-        /// The blue component
+        ///     The blue component
         /// </summary>
         public byte Blue { get; }
 
         /// <summary>
-        /// Create a new color from individual components
+        ///     Create a new color from individual components
         /// </summary>
         /// <param name="red">Red</param>
         /// <param name="green">Green</param>
@@ -67,7 +67,7 @@ namespace keyboards.ColorSpace
         }
 
         /// <summary>
-        /// Copy an existing color
+        ///     Copy an existing color
         /// </summary>
         /// <param name="rgb">The color to copy</param>
         public Rgb(Rgb rgb)
@@ -78,7 +78,7 @@ namespace keyboards.ColorSpace
         }
 
         /// <summary>
-        /// Convert an HSB color space to RBB color space
+        ///     Convert an HSB color space to RBB color space
         /// </summary>
         /// <param name="other">The color to convert</param>
         public Rgb(Hsb other)
@@ -86,9 +86,13 @@ namespace keyboards.ColorSpace
             double r = 0, b = 0, g = 0;
 
             if (other.Brightness < 0)
+            {
                 r = b = g = 0;
+            }
             else if (other.Saturation < 0)
+            {
                 r = g = b = other.Brightness;
+            }
             else
             {
                 var h = other.Hue * 6D;
@@ -137,9 +141,9 @@ namespace keyboards.ColorSpace
             Green = (byte) Math.Round(g * 255D);
             Blue = (byte) Math.Round(b * 255D);
         }
-        
+
         /// <summary>
-        /// Convert a hex string into a color
+        ///     Convert a hex string into a color
         /// </summary>
         /// <param name="hex">The hex string</param>
         /// <returns>A color</returns>
@@ -149,7 +153,7 @@ namespace keyboards.ColorSpace
         }
 
         /// <summary>
-        /// The string representation of the color
+        ///     The string representation of the color
         /// </summary>
         /// <returns></returns>
         public override string ToString()
@@ -158,26 +162,26 @@ namespace keyboards.ColorSpace
         }
 
         /// <summary>
-        /// Create a new color from a hex representation
+        ///     Create a new color from a hex representation
         /// </summary>
         /// <param name="hex">The hex string</param>
         /// <returns></returns>
         public static Rgb FromHex(string hex)
         {
-            var red = HexToByte(hex.Substring(0,2));
+            var red = HexToByte(hex.Substring(0, 2));
             var gre = HexToByte(hex.Substring(2, 2));
             var blu = HexToByte(hex.Substring(4, 2));
-            
+
             return new Rgb(red, gre, blu);
         }
 
         /// <summary>
-        /// The hex representation of this color
+        ///     The hex representation of this color
         /// </summary>
         public string Hex => Red.ToString("X2") + Green.ToString("X2") + Blue.ToString("X2");
 
         /// <summary>
-        /// True if two colors are the same
+        ///     True if two colors are the same
         /// </summary>
         /// <param name="obj">The object to compare to</param>
         /// <returns></returns>
@@ -188,7 +192,7 @@ namespace keyboards.ColorSpace
         }
 
         /// <summary>
-        /// Get the hash code of this color
+        ///     Get the hash code of this color
         /// </summary>
         /// <returns></returns>
         public override int GetHashCode()
