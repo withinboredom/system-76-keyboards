@@ -28,5 +28,4 @@ jobs:
         uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV }}
-          file: csharp/coverage.opencover.xml
-          name: Coverage
+          file: ./csharp/coverage.opencover.xml
