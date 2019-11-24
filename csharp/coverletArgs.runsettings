@@ -5,7 +5,7 @@
             <DataCollector friendlyName="XPlat code coverage">
                 <Configuration>
                     <Output>results</Output>
-                    <Format>xml,opencover</Format>
+                    <Format>xml,cobertura</Format>
                     <Exclude>[UnitTests]*</Exclude> <!-- [Assembly-Filter]Type-Filter -->
                     <ExcludeByAttribute>Obsolete,GeneratedCodeAttribute,CompilerGeneratedAttribute</ExcludeByAttribute>
                     <SingleHit>false</SingleHit>
