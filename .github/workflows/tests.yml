@@ -1,6 +1,6 @@
 name: Builder
 
-on: [push]
+on: [pull_request]
 
 jobs:
   tests:
@@ -18,10 +18,14 @@ jobs:
         run: dotnet test --settings coverletArgs.runsettings
       - name: Stage code coverage
         working-directory: csharp
-        run: mv UnitTests/TestResults/*/coverage.opencover.xml .
-      - name: Upload coverage
-        uses: codecov/codecov-action@v1
+        run: mv UnitTests/TestResults/*/coverage.info .
+      - name: Save coverage as artifact
+        uses: actions/upload-artifact@v1
         with:
-          token: ${{ secrets.CODECOV }}
-          file: csharp/coverage.opencover.xml
-          name: Coverage
+          name: coverage-report
+          path: csharp/coverage.info
+      - name: Upload coverage
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ./csharp/coverage.info
