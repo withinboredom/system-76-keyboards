@@ -2,12 +2,27 @@ using System;
 
 namespace keyboards.ColorSpace
 {
+    /// <summary>
+    /// Represents the HSB color space
+    /// </summary>
     public struct Hsb
     {
+        /// <summary>
+        /// Undefined color / black
+        /// </summary>
         public static readonly Hsb Empty = new Hsb();
 
-        internal const double Tolerance = 0.0000001;
+        /// <summary>
+        /// Tolerance for comparing two colors
+        /// </summary>
+        private const double Tolerance = 0.0000001;
 
+        /// <summary>
+        /// True if two colors are the same.
+        /// </summary>
+        /// <param name="i1">The left</param>
+        /// <param name="i2">The right</param>
+        /// <returns>True if the colors are the same, false otherwise</returns>
         public static bool operator ==(Hsb i1, Hsb i2)
         {
             return Math.Abs(i1.Hue - i2.Hue) < Tolerance &&
@@ -15,6 +30,12 @@ namespace keyboards.ColorSpace
                    Math.Abs(i1.Brightness - i2.Brightness) < Tolerance;
         }
 
+        /// <summary>
+        /// True if two colors are not the same
+        /// </summary>
+        /// <param name="i1">The left</param>
+        /// <param name="i2">The right</param>
+        /// <returns>True if the colors are not the same, false otherwise</returns>
         public static bool operator !=(Hsb i1, Hsb i2)
         {
             return Math.Abs(i1.Hue - i2.Hue) > Tolerance ||
@@ -22,34 +43,68 @@ namespace keyboards.ColorSpace
                    Math.Abs(i1.Brightness - i2.Brightness) > Tolerance;
         }
 
+        /// <summary>
+        /// The hue of the color
+        /// </summary>
         public double Hue { get; }
 
+        /// <summary>
+        /// The saturation of the color
+        /// </summary>
         public double Saturation { get; }
 
+        /// <summary>
+        /// The brightness of the color
+        /// </summary>
         public double Brightness { get; }
 
-        public Hsb SetBrightness(double b)
+        /// <summary>
+        /// Get a new color after adjusting the brightness
+        /// </summary>
+        /// <param name="brightness">The new brightness</param>
+        /// <returns>A new color with the brightness adjusted</returns>
+        public Hsb SetBrightness(double brightness)
         {
-            return new Hsb(Hue, Saturation, b);
+            return new Hsb(Hue, Saturation, brightness);
         }
 
-        public Hsb SetSaturation(double s)
+        /// <summary>
+        /// Get a new color after adjusting the saturation
+        /// </summary>
+        /// <param name="saturation">The new saturation</param>
+        /// <returns>A new color with the saturation adjusted</returns>
+        public Hsb SetSaturation(double saturation)
         {
-            return new Hsb(Hue, s, Brightness);
+            return new Hsb(Hue, saturation, Brightness);
+        }
+        
+        /// <summary>
+        /// Get a new color after adjusting the hue
+        /// </summary>
+        /// <param name="hue">The new hue</param>
+        /// <returns>A new color with the hue adjusted</returns>
+        public Hsb SetHue(double hue)
+        {
+            return new Hsb(hue, Saturation, Brightness);
         }
 
-        public Hsb SetHue(double h)
+        /// <summary>
+        /// Create a new HSB color
+        /// </summary>
+        /// <param name="hue">The hue</param>
+        /// <param name="saturation">The saturation</param>
+        /// <param name="brightness">The brightness</param>
+        public Hsb(double hue, double saturation, double brightness)
         {
-            return new Hsb(h, Saturation, Brightness);
+            Hue = hue % 360D;
+            Saturation = saturation > 1D ? 1D : saturation < 0 ? 0 : saturation;
+            Brightness = brightness > 1D ? 1D : brightness < 0 ? 0 : brightness;
         }
 
-        public Hsb(double h, double s, double b)
-        {
-            Hue = h % 360D;
-            Saturation = s > 1D ? 1D : s < 0 ? 0 : s;
-            Brightness = b > 1D ? 1D : b < 0 ? 0 : b;
-        }
-
+        /// <summary>
+        /// Create a new HSB color from another HSB color
+        /// </summary>
+        /// <param name="other">The color to copy</param>
         public Hsb(Hsb other)
         {
             Hue = other.Hue;
@@ -57,6 +112,10 @@ namespace keyboards.ColorSpace
             Brightness = other.Brightness;
         }
 
+        /// <summary>
+        /// Create a new HSB color from an RGB color space
+        /// </summary>
+        /// <param name="other">The color to copy</param>
         public Hsb(Rgb other)
         {
             var r = other.Red / 255D;
@@ -101,6 +160,11 @@ namespace keyboards.ColorSpace
             }
         }
 
+        /// <summary>
+        /// True if two colors are identical
+        /// </summary>
+        /// <param name="obj">The object to compare to</param>
+        /// <returns>True if the object is a color and the same color</returns>
         public override bool Equals(object? obj)
         {
             if (obj == null || GetType() != obj.GetType()) return false;
@@ -108,9 +172,18 @@ namespace keyboards.ColorSpace
             return this == (Hsb) obj;
         }
 
+        /// <summary>
+        /// Calculate the hash code of this color
+        /// </summary>
+        /// <returns></returns>
         public override int GetHashCode()
         {
             return Hue.GetHashCode() ^ Saturation.GetHashCode() ^ Brightness.GetHashCode();
+        }
+        
+        public override string ToString()
+        {
+            return Hue + "°, " + Saturation * 100D + "%, " + Brightness * 100D + "%";
         }
     }
 }
