@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using keyboards.ColorSpace;
 using keyboards.Filters;
@@ -9,68 +8,62 @@ using keyboards.Sides;
 namespace keyboards
 {
     /// <summary>
-    /// A side of the keyboard
+    ///     A side of the keyboard
     /// </summary>
     public abstract class Side : ISide
     {
         /// <summary>
-        /// The file to read/save from
+        ///     The file to read/save from
         /// </summary>
         private readonly string? _file;
 
         /// <summary>
-        /// Commit this side to the hardware
+        ///     Creates a new side
         /// </summary>
-        /// <returns></returns>
-        public async Task Commit(IEnumerable<IFilter> filters)
+        /// <param name="filename"></param>
+        protected Side(string filename)
         {
-            if(_file == null) return;
+            if (File.Exists(filename)) _file = filename;
 
-            var commitColor = CurrentColor;
-            foreach (var filter in filters)
-            {
-                commitColor = await filter.ApplyFilter(commitColor);
-            }
-
-            var hex = commitColor.Hex;
-            await File.WriteAllTextAsync(_file, hex);
+            Load().Wait();
         }
 
         /// <summary>
-        /// Load side from the hardware
-        /// </summary>
-        /// <returns></returns>
-        protected async Task Load()
-        {
-            if (_file == null) return;
-            var hex = await System.IO.File.ReadAllTextAsync(_file);
-            CurrentColor = Rgb.FromHex(hex);
-        }
-
-        /// <summary>
-        /// The current color
+        ///     The current color
         /// </summary>
         public Rgb CurrentColor { get; set; }
 
         /// <summary>
-        /// Renders the side
+        ///     Renders the side
         /// </summary>
         /// <param name="time"></param>
         /// <param name="deltaTime"></param>
         public abstract Task Render(long time, long deltaTime);
 
         /// <summary>
-        /// Creates a new side
+        ///     Commit this side to the hardware
         /// </summary>
-        /// <param name="filename"></param>
-        protected Side(string filename)
+        /// <returns></returns>
+        public async Task Commit(IEnumerable<IFilter> filters)
         {
-            if (System.IO.File.Exists(filename))
-            {
-                _file = filename;
-            }
+            if (_file == null) return;
 
-            Load().Wait();
+            var commitColor = CurrentColor;
+            foreach (var filter in filters) commitColor = await filter.ApplyFilter(commitColor);
+
+            var hex = commitColor.Hex;
+            await File.WriteAllTextAsync(_file, hex);
+        }
+
+        /// <summary>
+        ///     Load side from the hardware
+        /// </summary>
+        /// <returns></returns>
+        protected async Task Load()
+        {
+            if (_file == null) return;
+            var hex = await File.ReadAllTextAsync(_file);
+            CurrentColor = Rgb.FromHex(hex);
         }
     }
 }

@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Data.Common;
 using System.IO;
 using System.Linq;
 
@@ -7,10 +5,12 @@ namespace keyboards.Monitors
 {
     public class Cpu : IMonitor
     {
-        private long _lastSum = 0;
-        private long _lastIdle = 0;
         private const string Filename = "/proc/stat";
-        
+        private long _lastIdle;
+        private long _lastSum;
+
+        public double Percentage => CompileReading(TakeReading());
+
         private double CompileReading(string[] reading)
         {
             var sum = reading.Skip(1).Select(long.Parse).Sum();
@@ -27,7 +27,5 @@ namespace keyboards.Monitors
         {
             return File.ReadLines(Filename).ToList()[0].Split(' ').Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
         }
-
-        public double Percentage => CompileReading(TakeReading());
     }
 }

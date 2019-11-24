@@ -1,0 +1,27 @@
+name: Builder
+
+on: [push]
+
+jobs:
+  tests:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.0.101
+      - name: Run Tests
+        working-directory: csharp
+        run: dotnet test --settings coverletArgs.runsettings
+      - name: Stage code coverage
+        working-directory: csharp
+        run: mv UnitTests/TestResults/*/coverage.opencover.xml .
+      - name: Upload coverage
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV }}
+          file: csharp/coverage.opencover.xml
+          name: Coverage

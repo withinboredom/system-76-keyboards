@@ -12,12 +12,12 @@ namespace keyboards.Sides
         {
             _numberSamples = numberSamples;
         }
-        
+
         public double GetAverage(double newValue)
         {
             if (_measures.Count > _numberSamples)
                 _measures.Dequeue();
-            
+
             _measures.Enqueue(newValue);
             return _measures.Average();
         }

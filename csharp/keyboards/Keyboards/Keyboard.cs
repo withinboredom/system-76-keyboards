@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using keyboards.Filters;
@@ -7,59 +6,59 @@ using keyboards.Filters;
 namespace keyboards.Keyboards
 {
     /// <summary>
-    /// Represents an entire keyboard
+    ///     Represents an entire keyboard
     /// </summary>
     public class Keyboard
     {
         /// <summary>
-        /// The update frequency
-        /// </summary>
-        public double Frequency { get; set; }
-
-        public IFilter[] Filters { get; set; } = new IFilter[] {};
-
-        /// <summary>
-        /// The left side of the keyboard
-        /// </summary>
-        protected Side? Left { get; set; }
-        
-        /// <summary>
-        /// The center side
-        /// </summary>
-        protected Side? Center { get; set; }
-        
-        /// <summary>
-        /// The right side of the keyboard
-        /// </summary>
-        protected Side? Right { get; set; }
-        
-        /// <summary>
-        /// The single color zone
-        /// </summary>
-        protected Side? Single { get; set; }
-
-        /// <summary>
-        /// Default location of the left side of the keyboard
+        ///     Default location of the left side of the keyboard
         /// </summary>
         protected const string LeftFile = "/sys/class/leds/system76::kbd_backlight/color_left";
-        
+
         /// <summary>
-        /// Default location of the center side of the keyboard
+        ///     Default location of the center side of the keyboard
         /// </summary>
         protected const string CenterFile = "/sys/class/leds/system76::kbd_backlight/color_center";
-        
+
         /// <summary>
-        /// Default location of the right side of the keyboard
+        ///     Default location of the right side of the keyboard
         /// </summary>
         protected const string RightFile = "/sys/class/leds/system76::kbd_backlight/color_right";
 
         /// <summary>
-        /// Default location for a single color zone
+        ///     Default location for a single color zone
         /// </summary>
         protected const string SingleFile = "/sys/class/leds/system76_acpi::kbd_backlight/color";
 
         /// <summary>
-        /// Renders a keyboard
+        ///     The update frequency
+        /// </summary>
+        public double Frequency { get; set; }
+
+        public IFilter[] Filters { get; set; } = { };
+
+        /// <summary>
+        ///     The left side of the keyboard
+        /// </summary>
+        protected Side? Left { get; set; }
+
+        /// <summary>
+        ///     The center side
+        /// </summary>
+        protected Side? Center { get; set; }
+
+        /// <summary>
+        ///     The right side of the keyboard
+        /// </summary>
+        protected Side? Right { get; set; }
+
+        /// <summary>
+        ///     The single color zone
+        /// </summary>
+        protected Side? Single { get; set; }
+
+        /// <summary>
+        ///     Renders a keyboard
         /// </summary>
         /// <param name="time">The current time in milliseconds</param>
         /// <param name="deltaTime"></param>
@@ -72,7 +71,7 @@ namespace keyboards.Keyboards
         }
 
         /// <summary>
-        /// Run the keyboard
+        ///     Run the keyboard
         /// </summary>
         /// <param name="token">A cancellation token to stop</param>
         /// <returns></returns>
@@ -84,16 +83,13 @@ namespace keyboards.Keyboards
                 var startRender = DateTime.Now;
                 var time = startRender.Ticks / TimeSpan.TicksPerMillisecond;
                 await Render(time, time - lastTime);
-                foreach (var filter in Filters)
-                {
-                    await filter.PreApply(time);
-                }
+                foreach (var filter in Filters) await filter.PreApply(time);
                 await Task.WhenAll(Left == null ? Task.CompletedTask : Left.Commit(Filters),
                     Center == null ? Task.CompletedTask : Center.Commit(Filters),
                     Right == null ? Task.CompletedTask : Right.Commit(Filters),
                     Single == null ? Task.CompletedTask : Single.Commit(Filters));
-                var timeToNext = (startRender + TimeSpan.FromSeconds(Frequency)) - DateTime.Now;
-                if(timeToNext.Ticks > 0)
+                var timeToNext = startRender + TimeSpan.FromSeconds(Frequency) - DateTime.Now;
+                if (timeToNext.Ticks > 0)
                     await Task.Delay(timeToNext, token);
             }
 
