@@ -36,5 +36,17 @@ namespace UnitTests.ColorSpace
             var c1 = new Hsb(new Rgb(38, 33, 33));
             Assert.AreEqual(c1, new Hsb(0, 0.13157894D, 0.14901960D));
         }
+
+        [Test]
+        public void SetsWork()
+        {
+            var color = new Hsb(100, 1, 1);
+            var nohue = new Hsb(0, 1, 1);
+            var nosat = new Hsb(100, 0, 1);
+            var nobri = new Hsb(100, 1, 0);
+            Assert.AreEqual(nohue, color.SetHue(0));
+            Assert.AreEqual(nosat, color.SetSaturation(0));
+            Assert.AreEqual(nobri, color.SetBrightness(0));
+        }
     }
 }
