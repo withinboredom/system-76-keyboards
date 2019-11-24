@@ -1,4 +1,4 @@
-name: .NET Core
+name: Test And Coverage
 
 on: [push]
 
@@ -15,9 +15,6 @@ jobs:
           dotnet-version: 3.0.101
       - name: Install codecov
         run: dotnet tool install -g codecov.tool
-      - name: Build with dotnet
-        working-directory: csharp
-        run: dotnet build --configuration Release
       - name: Run Tests
         working-directory: csharp
         run: dotnet test --settings coverletArgs.runsettings
