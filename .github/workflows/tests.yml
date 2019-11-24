@@ -26,4 +26,4 @@ jobs:
         run: mv UnitTests/TestResults/*/coverage.opencover.xml .
       - name: Upload coverage
         working-directory: csharp
-        run: codcov -f coverage.opencover.xml -t $CODECOV
+        run: codecov -f coverage.opencover.xml -t $CODECOV
