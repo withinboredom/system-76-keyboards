@@ -10,11 +10,11 @@ coverage:
     project: yes
     patch: yes
     changes: no
+  fixes:
+    - "/home/runner/work/system-76-keyboards/system-76-keyboards/::"
+
 
 comment:
   layout: "reach,diff,flags,tree"
   behavior: default
   require_changes: no
-
-fixes:
-  - "/home/runner/work/system-76-keyboards/system-76-keyboards/::"
