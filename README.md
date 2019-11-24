@@ -2,6 +2,8 @@
 
 [![Coverage Status](https://coveralls.io/repos/github/withinboredom/system-76-keyboards/badge.svg?branch=fix/codecov)](https://coveralls.io/github/withinboredom/system-76-keyboards?branch=fix/codecov)
 
+![Build Status](https://github.com/withinboredom/system-76-keyboards/workflows/Builder/badge.svg)
+
 Create a floating rainbow effect that moves across your keyboard!
 
 # Installation
