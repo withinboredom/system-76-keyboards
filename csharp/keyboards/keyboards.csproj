@@ -20,7 +20,6 @@
         <PackageLicenseUrl>https://github.com/withinboredom/system-76-keyboards/blob/master/LICENSE</PackageLicenseUrl>
         <RepositoryUrl>https://github.com/withinboredom/system-76-keyboards</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
-	<DebugType>full</DebugType>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
