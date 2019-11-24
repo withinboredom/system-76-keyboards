@@ -19,6 +19,11 @@ jobs:
       - name: Stage code coverage
         working-directory: csharp
         run: mv UnitTests/TestResults/*/coverage.opencover.xml .
+      - name: Save coverage as artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: coverage-report
+          path: csharp/coverage.opencover.xml
       - name: Upload coverage
         uses: codecov/codecov-action@v1
         with:
