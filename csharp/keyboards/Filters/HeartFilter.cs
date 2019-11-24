@@ -8,23 +8,36 @@ using keyboards.Sides;
 
 namespace keyboards.Filters
 {
+    /// <summary>
+    ///     Tries to emulate a heartbeat based on cpu usage
+    /// </summary>
     public class HeartFilter : IFilter
     {
-        private DateTime _lastUpdate;
-        private DateTime _currentUpdate;
-        private readonly IMonitor _monitor;
+        /// <summary>
+        ///     Keep a moving average
+        /// </summary>
         private readonly MovingAverage _average;
-        private double _lastMeasure;
-        private readonly double[] _steps;
-        private int _currentStep;
 
-        private readonly double[] _waitTable = new[]
+        /// <summary>
+        ///     The monitor to use
+        /// </summary>
+        private readonly IMonitor _monitor;
+
+        /// <summary>
+        ///     The precalculated steps
+        /// </summary>
+        private readonly double[] _steps;
+
+        /// <summary>
+        ///     A table of update frames
+        /// </summary>
+        private readonly double[] _waitTable =
         {
             0.05,
-            0.04, 
-            0.03, 
-            0.02, 
-            0.01, 
+            0.04,
+            0.03,
+            0.02,
+            0.01,
             0.009,
             0.008,
             0.005,
@@ -36,9 +49,32 @@ namespace keyboards.Filters
             0.0003,
             0.0002,
             0.0002,
-            0.0001,
+            0.0001
         };
 
+        /// <summary>
+        ///     The current step we're on
+        /// </summary>
+        private int _currentStep;
+
+        /// <summary>
+        ///     The current update time
+        /// </summary>
+        private DateTime _currentUpdate;
+
+        /// <summary>
+        ///     Our last measurement
+        /// </summary>
+        private double _lastMeasure;
+
+        /// <summary>
+        ///     The time of the last update
+        /// </summary>
+        private DateTime _lastUpdate;
+
+        /// <summary>
+        ///     Initialize the filter
+        /// </summary>
         public HeartFilter()
         {
             _lastUpdate = DateTime.Now;
@@ -47,8 +83,8 @@ namespace keyboards.Filters
 
             var steps = new List<double>();
             var theta = 0D;
-            var amplitude = 0.75D;
-            var midline = 0.23D;
+            const double amplitude = 0.75D;
+            const double midline = 0.23D;
             while (theta < Math.PI)
             {
                 steps.Add(amplitude * Math.Sin(theta) + midline);
@@ -66,6 +102,11 @@ namespace keyboards.Filters
             _currentStep = 0;
         }
 
+        /// <summary>
+        ///     Called after render but before filtering, exactly once
+        /// </summary>
+        /// <param name="time">The time of the render</param>
+        /// <returns></returns>
         public Task PreApply(long time)
         {
             _lastMeasure = _average.GetAverage(_monitor.Percentage) / 100D;
@@ -83,17 +124,22 @@ namespace keyboards.Filters
             return Task.CompletedTask;
         }
 
-        public async Task<Rgb> ApplyFilter(Rgb color)
+        /// <summary>
+        ///     Applies the filter to a color, called per side
+        /// </summary>
+        /// <param name="color">The color to filter</param>
+        /// <returns></returns>
+        public Task<Rgb> ApplyFilter(Rgb color)
         {
             var brightness = _steps[_currentStep];
-            
+
             var c = new Hsb(color);
 
             var newBrightness = c.Brightness * brightness;
-            
+
             var next = new Rgb(c.SetBrightness(newBrightness));
-         
-            return next;
+
+            return Task.FromResult(next);
         }
     }
 }
