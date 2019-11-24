@@ -32,6 +32,11 @@ namespace keyboards.Keyboards
         /// The right side of the keyboard
         /// </summary>
         protected Side? Right { get; set; }
+        
+        /// <summary>
+        /// The single color zone
+        /// </summary>
+        protected Side? Single { get; set; }
 
         /// <summary>
         /// Default location of the left side of the keyboard
@@ -49,6 +54,11 @@ namespace keyboards.Keyboards
         protected const string RightFile = "/sys/class/leds/system76::kbd_backlight/color_right";
 
         /// <summary>
+        /// Default location for a single color zone
+        /// </summary>
+        protected const string SingleFile = "/sys/class/leds/system76_acpi::kbd_backlight/color";
+
+        /// <summary>
         /// Renders a keyboard
         /// </summary>
         /// <param name="time">The current time in milliseconds</param>
@@ -57,7 +67,8 @@ namespace keyboards.Keyboards
         {
             await Task.WhenAll(Left == null ? Task.CompletedTask : Left.Render(time, deltaTime),
                 Center == null ? Task.CompletedTask : Center.Render(time, deltaTime),
-                Right == null ? Task.CompletedTask : Right.Render(time, deltaTime));
+                Right == null ? Task.CompletedTask : Right.Render(time, deltaTime),
+                Single == null ? Task.CompletedTask : Single.Render(time, deltaTime));
         }
 
         /// <summary>
@@ -79,7 +90,8 @@ namespace keyboards.Keyboards
                 }
                 await Task.WhenAll(Left == null ? Task.CompletedTask : Left.Commit(Filters),
                     Center == null ? Task.CompletedTask : Center.Commit(Filters),
-                    Right == null ? Task.CompletedTask : Right.Commit(Filters));
+                    Right == null ? Task.CompletedTask : Right.Commit(Filters),
+                    Single == null ? Task.CompletedTask : Single.Commit(Filters));
                 var timeToNext = (startRender + TimeSpan.FromSeconds(Frequency)) - DateTime.Now;
                 if(timeToNext.Ticks > 0)
                     await Task.Delay(timeToNext, token);

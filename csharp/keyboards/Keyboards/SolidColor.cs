@@ -10,6 +10,7 @@ namespace keyboards.Keyboards
             Left = new Solid(color, LeftFile);
             Center = new Solid(color, CenterFile);
             Right = new Solid(color, RightFile);
+            Single = new Solid(color, SingleFile);
         }
     }
 }

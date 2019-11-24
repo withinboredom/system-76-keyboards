@@ -17,6 +17,7 @@ namespace keyboards.Keyboards
             Left = new RainbowSide(rp, gp, bp, 0, LeftFile);
             Center = new RainbowSide(rp, gp, bp,100, CenterFile);
             Right = new RainbowSide(rp, gp, bp, 200, RightFile);
+            Single = new RainbowSide(rp, gp, bp, 0, SingleFile);
         }
     }
 }
