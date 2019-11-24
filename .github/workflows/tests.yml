@@ -21,6 +21,10 @@ jobs:
       - name: Stage code coverage
         working-directory: csharp
         run: mv UnitTests/TestResults/*/coverage.opencover.xml .
+      - name: Install 2.1
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 2.1.0
       - name: Upload coverage
         working-directory: csharp
-        run: codecov -f coverage.opencover.xml -t $CODECOV
+        run: ~/.dotnet/tools/codecov -f coverage.opencover.xml -t $CODECOV
