@@ -14,7 +14,7 @@ jobs:
         with:
           dotnet-version: 3.0.101
       - name: Install codecov
-        run: dotnet tool install -g codcov.tool
+        run: dotnet tool install -g codecov.tool
       - name: Build with dotnet
         working-directory: csharp
         run: dotnet build --configuration Release
