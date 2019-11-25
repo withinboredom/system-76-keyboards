@@ -107,9 +107,9 @@ namespace keyboards.Filters
         /// </summary>
         /// <param name="time">The time of the render</param>
         /// <returns></returns>
-        public Task PreApply(long time)
+        public async Task PreApply(long time)
         {
-            _lastMeasure = _average.GetAverage(_monitor.Percentage) / 100D;
+            _lastMeasure = _average.GetAverage(await _monitor.Percentage()) / 100D;
             _currentUpdate = DateTime.Now;
 
             _lastMeasure = _lastMeasure >= 1 ? .99D : _lastMeasure;
@@ -120,8 +120,6 @@ namespace keyboards.Filters
                 _currentStep = (_currentStep + (int) Math.Max(frames, 1)) % _steps.Length;
                 _lastUpdate = _currentUpdate;
             }
-
-            return Task.CompletedTask;
         }
 
         /// <summary>

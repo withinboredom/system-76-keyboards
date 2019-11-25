@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using keyboards.Monitors;
 
 namespace keyboards.Sides
@@ -7,16 +8,16 @@ namespace keyboards.Sides
         private readonly MovingAverage _average;
         private readonly Memory _memory;
 
-        public MemSide(string filename, double red = 90, double yellow = 70, double green = 50) : base(filename, red,
+        public MemSide(IFile file, double red = 90, double yellow = 70, double green = 50) : base(file, red,
             yellow, green)
         {
             _average = new MovingAverage();
             _memory = new Memory();
         }
 
-        protected override double GetValue()
+        protected override async Task<double> GetValue()
         {
-            var total = _memory.Percentage;
+            var total = await _memory.Percentage();
             return _average.GetAverage(total);
         }
     }

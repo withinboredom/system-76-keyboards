@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using keyboards.Monitors;
 
 namespace keyboards.Sides
@@ -7,16 +8,16 @@ namespace keyboards.Sides
         private readonly MovingAverage _average;
         private readonly Disk _disk;
 
-        public DiskSide(string filename, double red = 90, double yellow = 70, double green = 50) : base(filename, red,
+        public DiskSide(IFile file, double red = 90, double yellow = 70, double green = 50) : base(file, red,
             yellow, green)
         {
             _average = new MovingAverage();
             _disk = new Disk();
         }
 
-        protected override double GetValue()
+        protected override async Task<double> GetValue()
         {
-            var usage = _disk.Percentage;
+            var usage = await _disk.Percentage();
             usage = _average.GetAverage(usage);
 
             return usage;

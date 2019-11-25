@@ -1,7 +1,9 @@
+using System.Threading.Tasks;
+
 namespace keyboards.Monitors
 {
     public interface IMonitor
     {
-        double Percentage { get; }
+        Task<double> Percentage();
     }
 }

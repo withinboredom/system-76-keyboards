@@ -1,29 +1,30 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 using keyboards.ColorSpace;
 using keyboards.Filters;
-using keyboards.Sides;
 
-namespace keyboards
+namespace keyboards.Sides
 {
     /// <summary>
     ///     A side of the keyboard
     /// </summary>
     public abstract class Side : ISide
     {
+        private readonly bool _disabled;
+
         /// <summary>
         ///     The file to read/save from
         /// </summary>
-        private readonly string? _file;
+        private readonly IFile _file;
 
         /// <summary>
         ///     Creates a new side
         /// </summary>
-        /// <param name="filename"></param>
-        protected Side(string filename)
+        /// <param name="file"></param>
+        protected Side(IFile file)
         {
-            if (File.Exists(filename)) _file = filename;
+            _file = file;
+            _disabled = !file.Exists;
 
             Load().Wait();
         }
@@ -46,13 +47,13 @@ namespace keyboards
         /// <returns></returns>
         public async Task Commit(IEnumerable<IFilter> filters)
         {
-            if (_file == null) return;
+            if (_disabled) return;
 
             var commitColor = CurrentColor;
             foreach (var filter in filters) commitColor = await filter.ApplyFilter(commitColor);
 
             var hex = commitColor.Hex;
-            await File.WriteAllTextAsync(_file, hex);
+            await _file.Commit(hex);
         }
 
         /// <summary>
@@ -61,8 +62,8 @@ namespace keyboards
         /// <returns></returns>
         protected async Task Load()
         {
-            if (_file == null) return;
-            var hex = await File.ReadAllTextAsync(_file);
+            if (_disabled) return;
+            var hex = await _file.Read();
             CurrentColor = Rgb.FromHex(hex);
         }
     }

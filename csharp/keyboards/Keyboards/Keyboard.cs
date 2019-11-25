@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using keyboards.Filters;
+using keyboards.Sides;
 
 namespace keyboards.Keyboards
 {
@@ -11,24 +12,24 @@ namespace keyboards.Keyboards
     public class Keyboard
     {
         /// <summary>
-        ///     Default location of the left side of the keyboard
-        /// </summary>
-        protected const string LeftFile = "/sys/class/leds/system76::kbd_backlight/color_left";
-
-        /// <summary>
         ///     Default location of the center side of the keyboard
         /// </summary>
-        protected const string CenterFile = "/sys/class/leds/system76::kbd_backlight/color_center";
+        protected readonly IFile CenterFile = new SpecialFile("/sys/class/leds/system76::kbd_backlight/color_center");
+
+        /// <summary>
+        ///     Default location of the left side of the keyboard
+        /// </summary>
+        protected readonly IFile LeftFile = new SpecialFile("/sys/class/leds/system76::kbd_backlight/color_left");
 
         /// <summary>
         ///     Default location of the right side of the keyboard
         /// </summary>
-        protected const string RightFile = "/sys/class/leds/system76::kbd_backlight/color_right";
+        protected readonly IFile RightFile = new SpecialFile("/sys/class/leds/system76::kbd_backlight/color_right");
 
         /// <summary>
         ///     Default location for a single color zone
         /// </summary>
-        protected const string SingleFile = "/sys/class/leds/system76_acpi::kbd_backlight/color";
+        protected readonly IFile SingleFile = new SpecialFile("/sys/class/leds/system76_acpi::kbd_backlight/color");
 
         /// <summary>
         ///     The update frequency

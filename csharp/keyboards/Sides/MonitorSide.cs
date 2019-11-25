@@ -10,22 +10,20 @@ namespace keyboards.Sides
         private readonly double _red;
         private readonly double _yellow;
 
-        protected MonitorSide(string filename, double red = 90, double yellow = 70, double green = 50) : base(filename)
+        protected MonitorSide(IFile file, double red = 90, double yellow = 70, double green = 50) : base(file)
         {
             _red = red;
             _yellow = yellow;
             _green = green;
         }
 
-        protected abstract double GetValue();
+        protected abstract Task<double> GetValue();
 
         public override async Task Render(long time, long deltaTime)
         {
-            var value = GetValue();
+            var value = await GetValue();
             if (value < 0) value = 0;
             else if (value >= 100) value = 100;
-
-            if (CurrentColor == null) return;
 
             if (value < _green)
                 CurrentColor = new Rgb(

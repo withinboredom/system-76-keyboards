@@ -1,15 +1,18 @@
-using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace keyboards.Monitors
 {
     public class Cpu : IMonitor
     {
-        private const string Filename = "/proc/stat";
+        private readonly IFile _file = new SpecialFile("/proc/stat");
         private long _lastIdle;
         private long _lastSum;
 
-        public double Percentage => CompileReading(TakeReading());
+        public async Task<double> Percentage()
+        {
+            return CompileReading(await TakeReading());
+        }
 
         private double CompileReading(string[] reading)
         {
@@ -23,9 +26,10 @@ namespace keyboards.Monitors
             return result;
         }
 
-        private static string[] TakeReading()
+        private async Task<string[]> TakeReading()
         {
-            return File.ReadLines(Filename).ToList()[0].Split(' ').Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
+            var lines = await _file.Lines();
+            return lines.ToList()[0].Split(' ').Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
         }
     }
 }

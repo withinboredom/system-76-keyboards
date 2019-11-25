@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Threading;
 using CommandLine;
 using keyboards.ColorSpace;
@@ -13,7 +12,7 @@ namespace keyboards
 {
     internal class Program
     {
-        private const string PidFile = "/run/keyboard-colors.pid";
+        private static readonly IFile PidFile = new SpecialFile("/run/keyboard-colors.pid");
         private static CancellationToken _token;
 
         private static IFilter[] GetFilters(IEnumerable<Options.Filters> filters)
@@ -38,34 +37,37 @@ namespace keyboards
 
         private static int RunOrInstall(string[] args, Options options, Keyboard kb)
         {
-            if (options.IsService && !File.Exists(PidFile))
+            if (!PidFile.HasPermission)
             {
-                File.WriteAllText(PidFile, Process.GetCurrentProcess().Id.ToString());
-            }
-            else if (!options.Install)
-            {
-                if (File.Exists(PidFile))
-                {
-                    Console.WriteLine(
-                        "The service is already running, did you mean to start it again? Hint: `keyboard-color stop`");
-                    Environment.Exit(1);
-                }
-
-                try
-                {
-                    return kb.Run(_token).Result;
-                }
-                catch (AggregateException _)
-                {
-                    // yep, we know.
-                    return 1;
-                }
+                Console.WriteLine("You need to run this as root!");
+                Environment.Exit(1);
             }
 
-            Installer.CreateParametersFromOptions(args);
-            Installer.PutMeInRightSpot();
-            Installer.CreateService();
-            return 0;
+            if (PidFile.Exists)
+            {
+                Console.WriteLine(
+                    "The service is already running, did you mean to start it again? Hint: `keyboard-color stop`");
+                Environment.Exit(1);
+            }
+
+            if (options.Install)
+            {
+                Installer.CreateParametersFromOptions(args);
+                Installer.PutMeInRightSpot();
+                Installer.CreateService();
+                return 0;
+            }
+
+            PidFile.Commit(Process.GetCurrentProcess().Id.ToString()).Wait();
+
+            try
+            {
+                return kb.Run(_token).Result;
+            }
+            catch (AggregateException)
+            {
+                return 1;
+            }
         }
 
         private static int Main(string[] args)
@@ -75,14 +77,14 @@ namespace keyboards
             Console.CancelKeyPress += (sender, eventArgs) =>
             {
                 source.Cancel();
-                File.Delete(PidFile);
+                PidFile.Delete();
                 eventArgs.Cancel = true;
             };
 
             AppDomain.CurrentDomain.ProcessExit += (sender, eventArgs) =>
             {
                 source.Cancel();
-                File.Delete(PidFile);
+                PidFile.Delete();
             };
 
             return Parser.Default.ParseArguments<RainbowOptions, SolidOptions, MonitorOptions, StopOptions>(args)

@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using keyboards.ColorSpace;
 
-namespace keyboards
+namespace keyboards.Sides
 {
     /// <summary>
     ///     A component that shifts colors over time
@@ -36,9 +36,9 @@ namespace keyboards
         /// <param name="greenPhase"></param>
         /// <param name="bluePhase"></param>
         /// <param name="timeShift"></param>
-        /// <param name="filename"></param>
-        public RainbowSide(double redPhase, double greenPhase, double bluePhase, long timeShift, string filename) :
-            base(filename)
+        /// <param name="file"></param>
+        public RainbowSide(double redPhase, double greenPhase, double bluePhase, long timeShift, IFile file) :
+            base(file)
         {
             _redPhase = redPhase;
             _bluePhase = bluePhase;
