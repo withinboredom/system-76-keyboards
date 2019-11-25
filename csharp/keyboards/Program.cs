@@ -77,14 +77,16 @@ namespace keyboards
             Console.CancelKeyPress += (sender, eventArgs) =>
             {
                 source.Cancel();
-                PidFile.Delete();
+                if(PidFile.Contents == Process.GetCurrentProcess().Id.ToString())
+                    PidFile.Delete();
                 eventArgs.Cancel = true;
             };
 
             AppDomain.CurrentDomain.ProcessExit += (sender, eventArgs) =>
             {
                 source.Cancel();
-                PidFile.Delete();
+                if(PidFile.Contents == Process.GetCurrentProcess().Id.ToString())
+                    PidFile.Delete();
             };
 
             return Parser.Default.ParseArguments<RainbowOptions, SolidOptions, MonitorOptions, StopOptions>(args)
