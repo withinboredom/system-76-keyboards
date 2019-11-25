@@ -10,7 +10,7 @@ namespace keyboards.Sides
         private readonly double _red;
         private readonly double _yellow;
 
-        protected MonitorSide(IFile file, double red = 90, double yellow = 70, double green = 50) : base(file)
+        protected MonitorSide(double red = 90, double yellow = 70, double green = 50)
         {
             _red = red;
             _yellow = yellow;

@@ -5,7 +5,7 @@ namespace keyboards.Sides
 {
     public class Solid : Side
     {
-        public Solid(Rgb color, IFile file) : base(file)
+        public Solid(Rgb color)
         {
             CurrentColor = color;
         }

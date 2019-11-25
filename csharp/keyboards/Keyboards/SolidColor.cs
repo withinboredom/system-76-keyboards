@@ -5,12 +5,14 @@ namespace keyboards.Keyboards
 {
     public class SolidColor : Keyboard
     {
-        public SolidColor(Rgb color)
+        public SolidColor(IControlContainer container, Rgb color) : base(container)
         {
-            Left = new Solid(color, LeftFile);
-            Center = new Solid(color, CenterFile);
-            Right = new Solid(color, RightFile);
-            Single = new Solid(color, SingleFile);
+            Sides = new[]
+            {
+                new Solid(color),
+                new Solid(color),
+                new Solid(color),
+            };
         }
     }
 }

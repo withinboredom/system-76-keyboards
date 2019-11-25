@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using keyboards.ColorSpace;
 using keyboards.Filters;
@@ -10,25 +11,6 @@ namespace keyboards.Sides
     /// </summary>
     public abstract class Side : ISide
     {
-        private readonly bool _disabled;
-
-        /// <summary>
-        ///     The file to read/save from
-        /// </summary>
-        private readonly IFile _file;
-
-        /// <summary>
-        ///     Creates a new side
-        /// </summary>
-        /// <param name="file"></param>
-        protected Side(IFile file)
-        {
-            _file = file;
-            _disabled = !file.Exists;
-
-            Load().Wait();
-        }
-
         /// <summary>
         ///     The current color
         /// </summary>
@@ -41,29 +23,28 @@ namespace keyboards.Sides
         /// <param name="deltaTime"></param>
         public abstract Task Render(long time, long deltaTime);
 
+        public IFile Led { get; set; }
+
         /// <summary>
         ///     Commit this side to the hardware
         /// </summary>
         /// <returns></returns>
         public async Task Commit(IEnumerable<IFilter> filters)
         {
-            if (_disabled) return;
-
             var commitColor = CurrentColor;
             foreach (var filter in filters) commitColor = await filter.ApplyFilter(commitColor);
 
             var hex = commitColor.Hex;
-            await _file.Commit(hex);
+            await Led.Commit(hex);
         }
 
         /// <summary>
         ///     Load side from the hardware
         /// </summary>
         /// <returns></returns>
-        protected async Task Load()
+        public async Task Load()
         {
-            if (_disabled) return;
-            var hex = await _file.Read();
+            var hex = await Led.Read();
             CurrentColor = Rgb.FromHex(hex);
         }
     }

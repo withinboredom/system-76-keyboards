@@ -8,8 +8,7 @@ namespace keyboards.Sides
         private readonly MovingAverage _average;
         private readonly Memory _memory;
 
-        public MemSide(IFile file, double red = 90, double yellow = 70, double green = 50) : base(file, red,
-            yellow, green)
+        public MemSide(double red = 90, double yellow = 70, double green = 50) : base(red, yellow, green)
         {
             _average = new MovingAverage();
             _memory = new Memory();

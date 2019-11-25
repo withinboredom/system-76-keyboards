@@ -64,7 +64,7 @@ namespace keyboards
             {
                 return kb.Run(_token).Result;
             }
-            catch (AggregateException)
+            catch (AggregateException exception)
             {
                 return 1;
             }
@@ -88,15 +88,17 @@ namespace keyboards
                 if(PidFile.Contents == Process.GetCurrentProcess().Id.ToString())
                     PidFile.Delete();
             };
+            
+            var container = new ControlContainer();
 
             return Parser.Default.ParseArguments<RainbowOptions, SolidOptions, MonitorOptions, StopOptions>(args)
                 .MapResult(
-                    (MonitorOptions o) => RunOrInstall(args, o,
-                        new Monitor {Frequency = o.Frequency, Filters = GetFilters(o.Filter)}),
+                    (MonitorOptions o) => RunOrInstall(args, o, 
+                        new Monitor(container) {Frequency = o.Frequency, Filters = GetFilters(o.Filter)}),
                     (RainbowOptions o) => RunOrInstall(args, o,
-                        new Rainbow {Frequency = o.Frequency, Filters = GetFilters(o.Filter)}),
+                        new Rainbow(container) {Frequency = o.Frequency, Filters = GetFilters(o.Filter)}),
                     (SolidOptions o) => RunOrInstall(args, o,
-                        new SolidColor(Rgb.FromHex(o.Color)) {Frequency = o.Frequency, Filters = GetFilters(o.Filter)}),
+                        new SolidColor(container, Rgb.FromHex(o.Color)) {Frequency = o.Frequency, Filters = GetFilters(o.Filter)}),
                     (StopOptions o) =>
                     {
                         Process.Start("systemctl", "stop keyboard-colors.service")?.WaitForExit();

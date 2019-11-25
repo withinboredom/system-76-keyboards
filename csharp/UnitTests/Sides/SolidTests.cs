@@ -26,10 +26,12 @@ namespace UnitTests.Sides
         [Test]
         public void TestSolidColor()
         {
-            var side = new Solid(Rgb.FromHex("FFFFFF"), _fixtureFile);
+            var container = new FakeContainer();
+            var side = new Solid(Rgb.FromHex("FFFFFF"));
+            side.Led = container.File("fake");
             side.Render(0, 0);
             side.Commit(new IFilter[] { });
-            Assert.AreEqual("FFFFFF", _fixtureFile.Contents);
+            Assert.AreEqual("FFFFFF", side.Led.Contents);
         }
     }
 }

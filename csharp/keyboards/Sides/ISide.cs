@@ -19,5 +19,9 @@ namespace keyboards.Sides
         /// <param name="time">The current time</param>
         /// <param name="deltaTime">The number of milliseconds since the last render</param>
         Task Render(long time, long deltaTime);
+
+        IFile Led { get; set; }
+
+        Task Load();
     }
 }
