@@ -25,7 +25,7 @@ namespace keyboards
             }
         }
 
-        public string Contents => File.ReadAllText(Filename);
+        public string Contents => Exists ? File.ReadAllText(Filename) : null;
 
         public Task Commit(string contents)
         {
