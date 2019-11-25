@@ -7,7 +7,7 @@ namespace keyboards
 {
     public static class Installer
     {
-        private static string Parameters { get; set; }
+        private static string? Parameters { get; set; }
 
         private static string SystemD =>
             $@"

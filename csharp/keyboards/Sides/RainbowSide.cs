@@ -58,7 +58,7 @@ namespace keyboards.Sides
                 (byte) ((Math.Sin(time * _greenPhase) + 1) * 255 / 2),
                 (byte) ((Math.Sin(time * _bluePhase) + 1) * 255 / 2)
             );
-            
+
             return Task.CompletedTask;
         }
     }

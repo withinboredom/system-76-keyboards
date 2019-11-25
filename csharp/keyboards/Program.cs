@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 using CommandLine;
 using keyboards.ColorSpace;
 using keyboards.Filters;
@@ -15,14 +16,15 @@ namespace keyboards
         private static readonly IFile PidFile = new SpecialFile("/run/keyboard-colors.pid");
         private static CancellationToken _token;
 
-        private static IFilter[] GetFilters(IEnumerable<Options.Filters> filters)
+        private static IFilter[] GetFilters(IEnumerable<Options.Filters>? filters, IControlContainer container)
         {
             var arr = new List<IFilter>();
+            if (filters == null) return arr.ToArray();
             foreach (var filter in filters)
                 switch (filter)
                 {
                     case Options.Filters.Heartbeat:
-                        arr.Add(new HeartFilter());
+                        arr.Add(new HeartFilter(container));
                         break;
                     case Options.Filters.WashedOut:
                         arr.Add(new WashedOut());
@@ -62,9 +64,10 @@ namespace keyboards
 
             try
             {
-                return kb.Run(_token).Result;
+                Task.WaitAll(new[] {kb.Run(_token), kb.UpdateSensors(_token)}, _token);
+                return 0;
             }
-            catch (AggregateException exception)
+            catch (OperationCanceledException)
             {
                 return 1;
             }
@@ -77,7 +80,7 @@ namespace keyboards
             Console.CancelKeyPress += (sender, eventArgs) =>
             {
                 source.Cancel();
-                if(PidFile.Contents == Process.GetCurrentProcess().Id.ToString())
+                if (PidFile.Contents == Process.GetCurrentProcess().Id.ToString())
                     PidFile.Delete();
                 eventArgs.Cancel = true;
             };
@@ -85,20 +88,21 @@ namespace keyboards
             AppDomain.CurrentDomain.ProcessExit += (sender, eventArgs) =>
             {
                 source.Cancel();
-                if(PidFile.Contents == Process.GetCurrentProcess().Id.ToString())
+                if (PidFile.Contents == Process.GetCurrentProcess().Id.ToString())
                     PidFile.Delete();
             };
-            
+
             var container = new ControlContainer();
 
             return Parser.Default.ParseArguments<RainbowOptions, SolidOptions, MonitorOptions, StopOptions>(args)
                 .MapResult(
-                    (MonitorOptions o) => RunOrInstall(args, o, 
-                        new Monitor(container) {Frequency = o.Frequency, Filters = GetFilters(o.Filter)}),
+                    (MonitorOptions o) => RunOrInstall(args, o,
+                        new Monitor(container) {Frequency = o.Frequency, Filters = GetFilters(o.Filter, container)}),
                     (RainbowOptions o) => RunOrInstall(args, o,
-                        new Rainbow(container) {Frequency = o.Frequency, Filters = GetFilters(o.Filter)}),
+                        new Rainbow(container) {Frequency = o.Frequency, Filters = GetFilters(o.Filter, container)}),
                     (SolidOptions o) => RunOrInstall(args, o,
-                        new SolidColor(container, Rgb.FromHex(o.Color)) {Frequency = o.Frequency, Filters = GetFilters(o.Filter)}),
+                        new SolidColor(container, o.Color != null ? Rgb.FromHex(o.Color) : Rgb.Empty)
+                            {Frequency = o.Frequency, Filters = GetFilters(o.Filter, container)}),
                     (StopOptions o) =>
                     {
                         Process.Start("systemctl", "stop keyboard-colors.service")?.WaitForExit();
@@ -118,7 +122,7 @@ namespace keyboards
             }
 
             [Option('f', "filter", Required = false, HelpText = "Specify a filter to use", Separator = ',')]
-            public IEnumerable<Filters> Filter { get; set; }
+            public IEnumerable<Filters>? Filter { get; set; }
 
             [Option('h', "frequency", Required = false, Default = 0.25,
                 HelpText = "Determine the delay between frames")]
@@ -137,7 +141,7 @@ namespace keyboards
         internal class SolidOptions : Options
         {
             [Option('c', "color", Default = "FFFFFF", HelpText = "Specify the color to become")]
-            public string Color { get; set; }
+            public string? Color { get; set; }
         }
 
         [Verb("monitor", HelpText = "Keep an eye on the machine")]

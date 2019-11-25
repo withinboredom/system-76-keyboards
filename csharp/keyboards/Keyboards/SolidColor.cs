@@ -11,7 +11,7 @@ namespace keyboards.Keyboards
             {
                 new Solid(color),
                 new Solid(color),
-                new Solid(color),
+                new Solid(color)
             };
         }
     }

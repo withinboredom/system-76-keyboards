@@ -5,13 +5,54 @@ using System.Threading.Tasks;
 
 namespace keyboards.Monitors
 {
-    public class Disk : IMonitor
+    public class Disk : Monitor
     {
-        private readonly IFile _file = new SpecialFile("/proc/diskstats");
+        /// <summary>
+        ///     The instance of this disk monitor
+        /// </summary>
+        private static IMonitor? _instance;
+
+        /// <summary>
+        ///     The file from proc
+        /// </summary>
+        private readonly IFile _file;
+
+        /// <summary>
+        ///     The last update
+        /// </summary>
         private int _lastUpdate;
+
+        /// <summary>
+        ///     Maximum reading
+        /// </summary>
         private double _max;
 
-        public async Task<double> Percentage()
+
+        /// <summary>
+        ///     Create a new disk monitor
+        /// </summary>
+        /// <param name="container"></param>
+        private Disk(IControlContainer container) : base(container)
+        {
+            _file = Container.File("/proc/diskstats");
+            Container.RegisterActiveMonitor(this);
+        }
+
+        /// <summary>
+        ///     Get the disk monitor instance
+        /// </summary>
+        /// <param name="container"></param>
+        /// <returns></returns>
+        public static IMonitor Instance(IControlContainer container)
+        {
+            return _instance ??= new Disk(container);
+        }
+
+        /// <summary>
+        ///     Get the latest reading from the sensor
+        /// </summary>
+        /// <returns></returns>
+        protected override async Task<double> GetReading()
         {
             var data = await _file.Lines();
             var info = 0;

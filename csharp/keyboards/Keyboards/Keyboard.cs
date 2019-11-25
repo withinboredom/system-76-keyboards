@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using keyboards.Filters;
 using keyboards.Sides;
-using Microsoft.VisualBasic;
 
 namespace keyboards.Keyboards
 {
@@ -14,21 +13,22 @@ namespace keyboards.Keyboards
     /// </summary>
     public abstract class Keyboard
     {
+        private readonly IControlContainer _container;
+
+        public Keyboard(IControlContainer container)
+        {
+            Sides = new List<Side>();
+            _container = container;
+        }
+
         /// <summary>
         ///     The update frequency
         /// </summary>
         public double Frequency { get; set; }
 
-        private readonly IControlContainer _container;
-
         protected IEnumerable<Side> Sides { get; set; }
 
         public IFilter[] Filters { get; set; } = { };
-
-        public Keyboard(IControlContainer container)
-        {
-            _container = container;
-        }
 
         /// <summary>
         ///     Renders a keyboard
@@ -50,7 +50,7 @@ namespace keyboards.Keyboards
             {
                 side.Led = file;
                 return side;
-            });
+            }).ToArray();
 
             return Task.WhenAll(Sides.Select(s => s.Load()));
         }
@@ -66,7 +66,21 @@ namespace keyboards.Keyboards
             var commits = Sides.Select(s => s.Commit(Filters));
             return Task.WhenAll(commits);
         }
-        
+
+        public async Task UpdateSensors(CancellationToken token)
+        {
+            var update = _container.Monitors.Select(m => m.CheckForChanges());
+
+            while (!token.IsCancellationRequested && _container.Monitors.Count != 0)
+            {
+                var start = DateTime.Now;
+                await Task.WhenAll(update);
+                var timeToNext = start + TimeSpan.FromSeconds(Frequency) - DateTime.Now;
+                if (timeToNext.Ticks > 0)
+                    await Task.Delay((int)timeToNext.TotalMilliseconds, token);
+            }
+        }
+
         /// <summary>
         ///     Run the keyboard
         /// </summary>
@@ -86,7 +100,7 @@ namespace keyboards.Keyboards
                 await Commit();
                 var timeToNext = startRender + TimeSpan.FromSeconds(Frequency) - DateTime.Now;
                 if (timeToNext.Ticks > 0)
-                    await Task.Delay(timeToNext, token);
+                    await Task.Delay((int)timeToNext.TotalMilliseconds, token);
             }
 
             return 0;

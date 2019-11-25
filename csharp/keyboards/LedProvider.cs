@@ -10,7 +10,7 @@ namespace keyboards
             Left,
             Center,
             Right,
-            Single,
+            Single
         }
 
         public static IFile GetLedFor(IControlContainer container, Location led)

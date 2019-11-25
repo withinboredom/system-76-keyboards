@@ -3,17 +3,53 @@ using System.Threading.Tasks;
 
 namespace keyboards.Monitors
 {
-    public class Cpu : IMonitor
+    public class Cpu : Monitor
     {
-        private readonly IFile _file = new SpecialFile("/proc/stat");
+        /// <summary>
+        ///     The instance
+        /// </summary>
+        private static IMonitor? _instance;
+
+        /// <summary>
+        ///     The file to monitor
+        /// </summary>
+        private readonly IFile _file;
+
+        /// <summary>
+        ///     The last idle calculation
+        /// </summary>
         private long _lastIdle;
+
+        /// <summary>
+        ///     The last sum calculation
+        /// </summary>
         private long _lastSum;
 
-        public async Task<double> Percentage()
+        /// <summary>
+        ///     Create a new CPU monitor
+        /// </summary>
+        /// <param name="container"></param>
+        private Cpu(IControlContainer container) : base(container)
         {
-            return CompileReading(await TakeReading());
+            _file = Container.File("/proc/stat");
+            Container.RegisterActiveMonitor(this);
         }
 
+        /// <summary>
+        ///     Get the instance of this monitor
+        /// </summary>
+        /// <param name="container"></param>
+        /// <returns></returns>
+        public static IMonitor Instance(IControlContainer container)
+        {
+            return _instance ??= new Cpu(container);
+        }
+
+        /// <summary>
+        ///     Compile the cpu reading into a percentage
+        /// </summary>
+        /// <param name="reading">The last raw reading</param>
+        /// <returns></returns>
         private double CompileReading(string[] reading)
         {
             var sum = reading.Skip(1).Select(long.Parse).Sum();
@@ -26,10 +62,23 @@ namespace keyboards.Monitors
             return result;
         }
 
+        /// <summary>
+        ///     Take a raw reading from proc
+        /// </summary>
+        /// <returns></returns>
         private async Task<string[]> TakeReading()
         {
             var lines = await _file.Lines();
             return lines.ToList()[0].Split(' ').Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
+        }
+
+        /// <summary>
+        ///     Get the latest reading from the sensor
+        /// </summary>
+        /// <returns></returns>
+        protected override async Task<double> GetReading()
+        {
+            return CompileReading(await TakeReading());
         }
     }
 }

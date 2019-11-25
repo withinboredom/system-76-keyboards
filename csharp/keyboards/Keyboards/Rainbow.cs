@@ -20,7 +20,7 @@ namespace keyboards.Keyboards
             {
                 new RainbowSide(rp, gp, bp, 0),
                 new RainbowSide(rp, gp, bp, 100),
-                new RainbowSide(rp, gp, bp, 200),
+                new RainbowSide(rp, gp, bp, 200)
             };
         }
     }

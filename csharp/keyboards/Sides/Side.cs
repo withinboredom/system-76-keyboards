@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using keyboards.ColorSpace;
 using keyboards.Filters;
@@ -23,7 +22,20 @@ namespace keyboards.Sides
         /// <param name="deltaTime"></param>
         public abstract Task Render(long time, long deltaTime);
 
-        public IFile Led { get; set; }
+        public IFile? Led { get; set; }
+
+        /// <summary>
+        ///     Load side from the hardware
+        /// </summary>
+        /// <returns></returns>
+        public async Task Load()
+        {
+            if (Led != null)
+            {
+                var hex = await Led.Read();
+                CurrentColor = Rgb.FromHex(hex);
+            }
+        }
 
         /// <summary>
         ///     Commit this side to the hardware
@@ -35,17 +47,7 @@ namespace keyboards.Sides
             foreach (var filter in filters) commitColor = await filter.ApplyFilter(commitColor);
 
             var hex = commitColor.Hex;
-            await Led.Commit(hex);
-        }
-
-        /// <summary>
-        ///     Load side from the hardware
-        /// </summary>
-        /// <returns></returns>
-        public async Task Load()
-        {
-            var hex = await Led.Read();
-            CurrentColor = Rgb.FromHex(hex);
+            if (Led != null) await Led.Commit(hex);
         }
     }
 }

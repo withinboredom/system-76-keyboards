@@ -14,14 +14,21 @@ namespace keyboards.Sides
         Rgb CurrentColor { get; set; }
 
         /// <summary>
+        ///     The active led this side is attached to
+        /// </summary>
+        IFile? Led { get; set; }
+
+        /// <summary>
         ///     Render the current color of the side to memory
         /// </summary>
         /// <param name="time">The current time</param>
         /// <param name="deltaTime">The number of milliseconds since the last render</param>
         Task Render(long time, long deltaTime);
 
-        IFile Led { get; set; }
-
+        /// <summary>
+        ///     Load the active led value
+        /// </summary>
+        /// <returns></returns>
         Task Load();
     }
 }

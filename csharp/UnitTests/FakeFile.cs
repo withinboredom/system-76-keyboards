@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using keyboards;
 
@@ -11,11 +10,11 @@ namespace UnitTests
         }
 
         public bool Exists { get; internal set; }
-        
+
         public bool HasPermission { get; internal set; }
-        
+
         public string Contents { get; internal set; }
-        
+
         public Task Commit(string contents)
         {
             Contents = contents;

@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using keyboards.Monitors;
+
 namespace keyboards
 {
     public class ControlContainer : IControlContainer
@@ -6,5 +9,7 @@ namespace keyboards
         {
             return new SpecialFile(filename);
         }
+
+        public HashSet<IMonitor> Monitors { get; set; } = new HashSet<IMonitor>();
     }
 }

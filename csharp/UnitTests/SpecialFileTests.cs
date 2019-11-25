@@ -7,7 +7,9 @@ namespace UnitTests
 {
     public class SpecialFileTests
     {
+        private const string NoExistsPath = "noexists";
         private static string ExistsPath => Path.GetTempFileName();
+
         private static string NoPermsPath
         {
             get
@@ -18,14 +20,12 @@ namespace UnitTests
             }
         }
 
-        private const string NoExistsPath = "noexists";
-
         [Test]
         public void CanCheckExists()
         {
             var exists = new SpecialFile(ExistsPath);
             var noExists = new SpecialFile(NoExistsPath);
-            
+
             Assert.IsTrue(exists.Exists);
             Assert.IsFalse(noExists.Exists);
         }

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using keyboards.Monitors;
 using keyboards.Sides;
 
 namespace keyboards.Keyboards
@@ -9,9 +9,9 @@ namespace keyboards.Keyboards
         {
             Sides = new Side[]
             {
-                new CpuSide(95, 75),
-                new MemSide(80, 45, 15),
-                new DiskSide(90, 66, 30),
+                new MonitorSide(Cpu.Instance(container), 95, 75),
+                new MonitorSide(Memory.Instance(container), 80, 45, 15),
+                new MonitorSide(Disk.Instance(container), 90, 66, 30)
             };
         }
     }

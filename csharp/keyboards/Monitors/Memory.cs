@@ -3,11 +3,43 @@ using System.Threading.Tasks;
 
 namespace keyboards.Monitors
 {
-    public class Memory : IMonitor
+    public class Memory : Monitor
     {
-        private readonly IFile _file = new SpecialFile("/proc/meminfo");
+        /// <summary>
+        ///     The current instance
+        /// </summary>
+        private static IMonitor? _instance;
 
-        public async Task<double> Percentage()
+        /// <summary>
+        ///     The file
+        /// </summary>
+        private readonly IFile _file;
+
+        /// <summary>
+        ///     Create a new memory monitor and register as active
+        /// </summary>
+        /// <param name="container"></param>
+        private Memory(IControlContainer container) : base(container)
+        {
+            _file = Container.File("/proc/meminfo");
+            Container.RegisterActiveMonitor(this);
+        }
+
+        /// <summary>
+        ///     Get the active instance or create a new one
+        /// </summary>
+        /// <param name="container">The IoC container</param>
+        /// <returns></returns>
+        public static IMonitor Instance(IControlContainer container)
+        {
+            return _instance ??= new Memory(container);
+        }
+
+        /// <summary>
+        ///     Get the reading from the proc filesystem
+        /// </summary>
+        /// <returns></returns>
+        protected override async Task<double> GetReading()
         {
             var data = await _file.Lines();
             var memoryInfo = new Dictionary<string, double>();
