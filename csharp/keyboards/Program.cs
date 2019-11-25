@@ -122,9 +122,6 @@ namespace keyboards
 
             [Option('i', "install", Required = false, HelpText = "Install the active command")]
             public bool Install { get; set; }
-
-            [Option('s', "service", Hidden = true, Default = false, Required = false, HelpText = "Start as a service")]
-            public bool IsService { get; set; }
         }
 
         [Verb("rainbow", HelpText = "Turn on the rainbow!")]
