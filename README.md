@@ -17,8 +17,20 @@ Create a floating rainbow effect that moves across your keyboard!
 
 ## Changing modes
 
-- `keyboard-color rainbow --install`
-- or `echo yy | keyboard-color monitor --install` for a non-interactive experience
+- `keyboard-color rainbow`: Show a pretty rainbow that moves across the keyboard
+- `keyboard-color monitor`: Show cpu usage 
+- `keyboard-color solidcolor --color FFAAFF`: Set the color to whatever hex color you want
+
+## Filters
+
+- `keyboard-color MODE --filter WashedOut`: Get a washed out look
+- `keyboard-color MODE --filter BlackWhite`: A terrible attempt at black and white
+- `keyboard-color MODE --filter Hearbeat`: Dim and brighten the keyboard based on cpu usage
+
+## Setting FPS
+
+The default is 10 frames per second, but you may find that it causes considerable CPU usage on your machine (it's about
+5% on my machine with `monitor` mode), you can change it with the `--fps` option. 
 
 ## Colors for `monitor`
 
