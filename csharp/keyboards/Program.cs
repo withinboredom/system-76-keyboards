@@ -19,9 +19,9 @@ namespace keyboards
         private static IFilter[] GetFilters(Options options, IControlContainer container)
         {
             var arr = new List<IFilter>();
-            
-            if(!options.NoPower) arr.Add(new PowerFilter(container));
-            
+
+            if (!options.NoPower) arr.Add(new PowerFilter(container));
+
             if (options.Filter == null) return arr.ToArray();
             foreach (var filter in options.Filter)
                 switch (filter)
@@ -102,7 +102,8 @@ namespace keyboards
 
             var container = new ControlContainer();
 
-            return Parser.Default.ParseArguments<RainbowOptions, SolidOptions, MonitorOptions, StopOptions>(args)
+            return Parser.Default
+                .ParseArguments<RainbowOptions, SolidOptions, MonitorOptions, NewRainbowOptions, StopOptions>(args)
                 .MapResult(
                     (MonitorOptions o) => RunOrInstall(args, o,
                         new Monitor(container) {Frequency = FromFps(o.Frequency), Filters = GetFilters(o, container)}),
@@ -110,6 +111,9 @@ namespace keyboards
                         new Rainbow(container) {Frequency = FromFps(o.Frequency), Filters = GetFilters(o, container)}),
                     (SolidOptions o) => RunOrInstall(args, o,
                         new SolidColor(container, o.Color != null ? Rgb.FromHex(o.Color) : Rgb.Empty)
+                            {Frequency = FromFps(o.Frequency), Filters = GetFilters(o, container)}),
+                    (NewRainbowOptions o) => RunOrInstall(args, o,
+                        new NewRainbow(container)
                             {Frequency = FromFps(o.Frequency), Filters = GetFilters(o, container)}),
                     (StopOptions o) =>
                     {
@@ -126,7 +130,7 @@ namespace keyboards
             {
                 Heartbeat,
                 WashedOut,
-                BlackWhite,
+                BlackWhite
             }
 
             [Option('f', "filter", Required = false, HelpText = "Specify a filter to use", Separator = ',')]
@@ -138,12 +142,12 @@ namespace keyboards
 
             [Option('i', "install", Required = false, HelpText = "Install the active command")]
             public bool Install { get; set; }
-            
+
             [Option('p', "noPower", Required = false, HelpText = "Disable fade out when the screen turns off")]
             public bool NoPower { get; set; }
         }
 
-        [Verb("rainbow", HelpText = "Turn on the rainbow!")]
+        [Verb("oldrainbow", HelpText = "Turn on the rainbow!")]
         internal class RainbowOptions : Options
         {
         }
@@ -162,6 +166,11 @@ namespace keyboards
 
         [Verb("stop", HelpText = "Stop the currently running service")]
         internal class StopOptions : Options
+        {
+        }
+
+        [Verb("rainbow", HelpText = "Start the rainbow")]
+        internal class NewRainbowOptions : Options
         {
         }
     }

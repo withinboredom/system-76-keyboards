@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using keyboards.ColorSpace;
 using keyboards.Monitors;
 
@@ -21,7 +20,6 @@ namespace keyboards.Sides
 
         private void MonitorOnChanged(object? sender, double e)
         {
-            IsDirty = true;
             var value = e;
             if (value < 0) value = 0;
             else if (value >= 100) value = 100;

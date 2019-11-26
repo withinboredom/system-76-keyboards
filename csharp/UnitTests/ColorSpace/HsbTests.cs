@@ -38,6 +38,18 @@ namespace UnitTests.ColorSpace
         }
 
         [Test]
+        public void RegressionCanConvertRed()
+        {
+            var red = new Rgb(255, 0, 0);
+            var hsb = new Hsb(red).SetBrightness(1);
+            Assert.AreEqual(red, new Rgb(hsb));
+
+            var h173 = new Hsb(173, 1, 1);
+            var color = new Rgb(h173);
+            Assert.AreEqual(Rgb.FromHex("00FFE1"), color);
+        }
+
+        [Test]
         public void SetsWork()
         {
             var color = new Hsb(100, 1, 1);

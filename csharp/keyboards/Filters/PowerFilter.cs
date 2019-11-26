@@ -6,18 +6,11 @@ namespace keyboards.Filters
 {
     public class PowerFilter : IFilter
     {
-        private IMonitor _display;
         private double _brightness;
-        
+
         public PowerFilter(IControlContainer container)
         {
-            _display = Display.Instance(container);
-            _display.Changed += DisplayOnChanged;
-        }
-
-        private void DisplayOnChanged(object? sender, double e)
-        {
-            _brightness = e / 100D;
+            Display.Instance(container).Changed += DisplayOnChanged;
         }
 
         public Task PreApply(long time)
@@ -27,9 +20,18 @@ namespace keyboards.Filters
 
         public Task<Rgb> ApplyFilter(Rgb color)
         {
+            if (_brightness > 0.95D) return Task.FromResult(color);
+
             var newColor = new Hsb(color);
             var newBrightness = _brightness * newColor.Brightness;
+            if (newBrightness < 0.01D) newBrightness = 0;
+
             return Task.FromResult(new Rgb(newColor.SetBrightness(newBrightness)));
+        }
+
+        private void DisplayOnChanged(object? sender, double e)
+        {
+            _brightness = e / 100D;
         }
     }
 }
