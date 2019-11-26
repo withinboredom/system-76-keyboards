@@ -1,31 +1,30 @@
 using System;
 using System.Threading.Tasks;
 using keyboards.ColorSpace;
+using keyboards.Monitors;
 
 namespace keyboards.Sides
 {
-    public abstract class MonitorSide : Side
+    public class MonitorSide : Side
     {
         private readonly double _green;
         private readonly double _red;
         private readonly double _yellow;
 
-        protected MonitorSide(string filename, double red = 90, double yellow = 70, double green = 50) : base(filename)
+        public MonitorSide(IMonitor monitor, double red = 90, double yellow = 70, double green = 50)
         {
             _red = red;
             _yellow = yellow;
             _green = green;
+            monitor.Changed += MonitorOnChanged;
         }
 
-        protected abstract double GetValue();
-
-        public override async Task Render(long time, long deltaTime)
+        private void MonitorOnChanged(object? sender, double e)
         {
-            var value = GetValue();
+            IsDirty = true;
+            var value = e;
             if (value < 0) value = 0;
             else if (value >= 100) value = 100;
-
-            if (CurrentColor == null) return;
 
             if (value < _green)
                 CurrentColor = new Rgb(

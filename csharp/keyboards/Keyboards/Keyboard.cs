@@ -1,73 +1,59 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using keyboards.Filters;
+using keyboards.Sides;
 
 namespace keyboards.Keyboards
 {
     /// <summary>
     ///     Represents an entire keyboard
     /// </summary>
-    public class Keyboard
+    public abstract class Keyboard
     {
-        /// <summary>
-        ///     Default location of the left side of the keyboard
-        /// </summary>
-        protected const string LeftFile = "/sys/class/leds/system76::kbd_backlight/color_left";
+        private readonly IControlContainer _container;
 
-        /// <summary>
-        ///     Default location of the center side of the keyboard
-        /// </summary>
-        protected const string CenterFile = "/sys/class/leds/system76::kbd_backlight/color_center";
-
-        /// <summary>
-        ///     Default location of the right side of the keyboard
-        /// </summary>
-        protected const string RightFile = "/sys/class/leds/system76::kbd_backlight/color_right";
-
-        /// <summary>
-        ///     Default location for a single color zone
-        /// </summary>
-        protected const string SingleFile = "/sys/class/leds/system76_acpi::kbd_backlight/color";
+        public Keyboard(IControlContainer container)
+        {
+            Sides = new List<Side>();
+            _container = container;
+        }
 
         /// <summary>
         ///     The update frequency
         /// </summary>
         public double Frequency { get; set; }
 
+        protected IEnumerable<Side> Sides { get; set; }
+
         public IFilter[] Filters { get; set; } = { };
 
-        /// <summary>
-        ///     The left side of the keyboard
-        /// </summary>
-        protected Side? Left { get; set; }
-
-        /// <summary>
-        ///     The center side
-        /// </summary>
-        protected Side? Center { get; set; }
-
-        /// <summary>
-        ///     The right side of the keyboard
-        /// </summary>
-        protected Side? Right { get; set; }
-
-        /// <summary>
-        ///     The single color zone
-        /// </summary>
-        protected Side? Single { get; set; }
-
-        /// <summary>
-        ///     Renders a keyboard
-        /// </summary>
-        /// <param name="time">The current time in milliseconds</param>
-        /// <param name="deltaTime"></param>
-        private async Task Render(long time, long deltaTime)
+        private Task PrepareSides()
         {
-            await Task.WhenAll(Left == null ? Task.CompletedTask : Left.Render(time, deltaTime),
-                Center == null ? Task.CompletedTask : Center.Render(time, deltaTime),
-                Right == null ? Task.CompletedTask : Right.Render(time, deltaTime),
-                Single == null ? Task.CompletedTask : Single.Render(time, deltaTime));
+            var sides = Sides.ToArray();
+            var leds = LedProvider.SupportedConfiguration(_container).ToArray();
+
+            Sides = leds.Zip(sides, (file, side) =>
+            {
+                side.Led = file;
+                return side;
+            }).ToArray();
+
+            return Task.WhenAll(Sides.Select(s => s.Load()));
+        }
+
+        private Task PreApplyFilters(long time)
+        {
+            var applies = Filters.Select(f => f.PreApply(time));
+            return Task.WhenAll(applies);
+        }
+
+        private Task Commit()
+        {
+            var commits = Sides.Select(s => s.Commit(Filters));
+            return Task.WhenAll(commits);
         }
 
         /// <summary>
@@ -77,20 +63,20 @@ namespace keyboards.Keyboards
         /// <returns></returns>
         public async Task<int> Run(CancellationToken token)
         {
+            await PrepareSides();
+            
+            var update = _container.Monitors.Select(m => m.CheckForChanges());
             var lastTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
             while (!token.IsCancellationRequested)
             {
                 var startRender = DateTime.Now;
                 var time = startRender.Ticks / TimeSpan.TicksPerMillisecond;
-                await Render(time, time - lastTime);
-                foreach (var filter in Filters) await filter.PreApply(time);
-                await Task.WhenAll(Left == null ? Task.CompletedTask : Left.Commit(Filters),
-                    Center == null ? Task.CompletedTask : Center.Commit(Filters),
-                    Right == null ? Task.CompletedTask : Right.Commit(Filters),
-                    Single == null ? Task.CompletedTask : Single.Commit(Filters));
+                await Task.WhenAll(update);
+                await PreApplyFilters(time);
+                await Commit();
                 var timeToNext = startRender + TimeSpan.FromSeconds(Frequency) - DateTime.Now;
                 if (timeToNext.Ticks > 0)
-                    await Task.Delay(timeToNext, token);
+                    await Task.Delay((int)timeToNext.TotalMilliseconds, token);
             }
 
             return 0;

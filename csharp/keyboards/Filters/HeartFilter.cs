@@ -16,12 +16,7 @@ namespace keyboards.Filters
         /// <summary>
         ///     Keep a moving average
         /// </summary>
-        private readonly MovingAverage _average;
-
-        /// <summary>
-        ///     The monitor to use
-        /// </summary>
-        private readonly IMonitor _monitor;
+        private readonly MovingAverage _average = new MovingAverage();
 
         /// <summary>
         ///     The precalculated steps
@@ -75,11 +70,10 @@ namespace keyboards.Filters
         /// <summary>
         ///     Initialize the filter
         /// </summary>
-        public HeartFilter()
+        public HeartFilter(IControlContainer container)
         {
             _lastUpdate = DateTime.Now;
-            _monitor = new Cpu();
-            _average = new MovingAverage(40);
+            Cpu.Instance(container).Changed += OnChanged;
 
             var steps = new List<double>();
             var theta = 0D;
@@ -103,13 +97,18 @@ namespace keyboards.Filters
         }
 
         /// <summary>
+        ///     The latest value from the sensor
+        /// </summary>
+        private double Value { get; set; }
+
+        /// <summary>
         ///     Called after render but before filtering, exactly once
         /// </summary>
         /// <param name="time">The time of the render</param>
         /// <returns></returns>
         public Task PreApply(long time)
         {
-            _lastMeasure = _average.GetAverage(_monitor.Percentage) / 100D;
+            _lastMeasure = _average.GetAverage(Value) / 100D;
             _currentUpdate = DateTime.Now;
 
             _lastMeasure = _lastMeasure >= 1 ? .99D : _lastMeasure;
@@ -140,6 +139,16 @@ namespace keyboards.Filters
             var next = new Rgb(c.SetBrightness(newBrightness));
 
             return Task.FromResult(next);
+        }
+
+        /// <summary>
+        ///     Called when the sensor updates
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnChanged(object? sender, double e)
+        {
+            Value = e;
         }
     }
 }

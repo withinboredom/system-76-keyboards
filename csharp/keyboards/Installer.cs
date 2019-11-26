@@ -7,7 +7,7 @@ namespace keyboards
 {
     public static class Installer
     {
-        private static string Parameters { get; set; }
+        private static string? Parameters { get; set; }
 
         private static string SystemD =>
             $@"
@@ -15,7 +15,7 @@ namespace keyboards
 Description=System76 Keyboard Colors
 [Service]
 Type=Simple
-ExecStart=/usr/local/bin/keyboard-color {Parameters} --service
+ExecStart=/usr/local/bin/keyboard-color {Parameters}
 PIDFile=keyboard-colors.pid
 [Install]
 WantedBy=multi-user.target

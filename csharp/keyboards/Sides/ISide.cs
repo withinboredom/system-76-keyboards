@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using keyboards.ColorSpace;
+using keyboards.Filters;
 
 namespace keyboards.Sides
 {
@@ -14,10 +16,16 @@ namespace keyboards.Sides
         Rgb CurrentColor { get; set; }
 
         /// <summary>
-        ///     Render the current color of the side to memory
+        ///     The active led this side is attached to
         /// </summary>
-        /// <param name="time">The current time</param>
-        /// <param name="deltaTime">The number of milliseconds since the last render</param>
-        Task Render(long time, long deltaTime);
+        IFile? Led { get; set; }
+
+        Task Commit(IEnumerable<IFilter> filters);
+        
+        /// <summary>
+        ///     Load the active led value
+        /// </summary>
+        /// <returns></returns>
+        Task Load();
     }
 }

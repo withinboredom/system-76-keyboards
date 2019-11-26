@@ -1,8 +1,9 @@
 using System;
 using System.Threading.Tasks;
 using keyboards.ColorSpace;
+using keyboards.Monitors;
 
-namespace keyboards
+namespace keyboards.Sides
 {
     /// <summary>
     ///     A component that shifts colors over time
@@ -32,30 +33,25 @@ namespace keyboards
         /// <summary>
         ///     Create a rainbow side
         /// </summary>
+        /// <param name="monitor"></param>
         /// <param name="redPhase"></param>
         /// <param name="greenPhase"></param>
         /// <param name="bluePhase"></param>
         /// <param name="timeShift"></param>
-        /// <param name="filename"></param>
-        public RainbowSide(double redPhase, double greenPhase, double bluePhase, long timeShift, string filename) :
-            base(filename)
+        /// <param name="file"></param>
+        public RainbowSide(IMonitor monitor, double redPhase, double greenPhase, double bluePhase, long timeShift)
         {
             _redPhase = redPhase;
             _bluePhase = bluePhase;
             _greenPhase = greenPhase;
             _timeShift = timeShift;
-
-            Load().Wait();
+            monitor.Changed += MonitorOnChanged;
         }
 
-        /// <summary>
-        ///     Render the rainbow!
-        /// </summary>
-        /// <param name="time"></param>
-        public override async Task Render(long time, long deltaTime)
+        private void MonitorOnChanged(object? sender, double e)
         {
-            time += _timeShift;
-            if (CurrentColor == null) return;
+            IsDirty = true;
+            var time = e + _timeShift;
 
             CurrentColor = new Rgb(
                 (byte) ((Math.Sin(time * _redPhase) + 1) * 255 / 2),
