@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -5,21 +6,28 @@ namespace keyboards.Sides
 {
     public class MovingAverage
     {
-        private readonly Queue<double> _measures = new Queue<double>(10);
-        private readonly byte _numberSamples;
-
-        public MovingAverage(byte numberSamples = 10)
-        {
-            _numberSamples = numberSamples;
-        }
+        private double _average = 0;
+        private double _c;
+        private bool _ready;
 
         public double GetAverage(double newValue)
         {
-            if (_measures.Count > _numberSamples)
-                _measures.Dequeue();
+            var now = DateTime.Now.Ticks / (double) TimeSpan.TicksPerSecond;
+            var c = now - _c;
+            _c = now;
+            
+            if (!_ready)
+            {
+                _ready = true;
+                return 0;
+            }
 
-            _measures.Enqueue(newValue);
-            return _measures.Average();
+            var nextAverage = (1 - c) * _average + c * newValue;
+            _average = nextAverage;
+
+            if (!(c < 1D)) return newValue;
+            
+            return Math.Max(0, Math.Min(100, _average));
         }
     }
 }

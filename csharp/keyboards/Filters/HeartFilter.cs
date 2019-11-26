@@ -16,7 +16,7 @@ namespace keyboards.Filters
         /// <summary>
         ///     Keep a moving average
         /// </summary>
-        private readonly MovingAverage _average;
+        private readonly MovingAverage _average = new MovingAverage();
 
         /// <summary>
         ///     The precalculated steps
@@ -74,7 +74,6 @@ namespace keyboards.Filters
         {
             _lastUpdate = DateTime.Now;
             Cpu.Instance(container).Changed += OnChanged;
-            _average = new MovingAverage(40);
 
             var steps = new List<double>();
             var theta = 0D;
