@@ -44,7 +44,7 @@ namespace UnitTests.ColorSpace
             var hsb = new Hsb(red).SetBrightness(1);
             Assert.AreEqual(red, new Rgb(hsb));
 
-            var h173 = new Hsb(173, 1, 1);
+            var h173 = new Hsb(173 / 360D, 1, 1);
             var color = new Rgb(h173);
             Assert.AreEqual(Rgb.FromHex("00FFE1"), color);
         }

@@ -6,7 +6,7 @@ namespace UnitTests
 {
     public class FakeContainer : IControlContainer
     {
-        public HashSet<IMonitor> Monitors { get; set; }
+        public HashSet<IMonitor> Monitors { get; set; } = new HashSet<IMonitor>();
 
         public IFile File(string filename)
         {

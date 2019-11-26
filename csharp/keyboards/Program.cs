@@ -7,6 +7,7 @@ using CommandLine;
 using keyboards.ColorSpace;
 using keyboards.Filters;
 using keyboards.Keyboards;
+using keyboards.Monitors;
 using Monitor = keyboards.Keyboards.Monitor;
 
 namespace keyboards
@@ -20,15 +21,12 @@ namespace keyboards
         {
             var arr = new List<IFilter>();
 
-            if (!options.NoPower) arr.Add(new PowerFilter(container));
+            if (!options.NoPower) arr.Add(new PowerFilter(container, Display.Instance(container)));
 
             if (options.Filter == null) return arr.ToArray();
             foreach (var filter in options.Filter)
                 switch (filter)
                 {
-                    case Options.Filters.Heartbeat:
-                        arr.Add(new HeartFilter(container));
-                        break;
                     case Options.Filters.WashedOut:
                         arr.Add(new WashedOut());
                         break;
@@ -128,7 +126,6 @@ namespace keyboards
         {
             public enum Filters
             {
-                Heartbeat,
                 WashedOut,
                 BlackWhite
             }

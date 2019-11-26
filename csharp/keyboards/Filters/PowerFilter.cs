@@ -8,9 +8,9 @@ namespace keyboards.Filters
     {
         private double _brightness;
 
-        public PowerFilter(IControlContainer container)
+        public PowerFilter(IControlContainer container, IMonitor monitor)
         {
-            Display.Instance(container).Changed += DisplayOnChanged;
+            monitor.Changed += DisplayOnChanged;
         }
 
         public Task PreApply(long time)
