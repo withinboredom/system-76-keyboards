@@ -9,6 +9,9 @@ namespace keyboards.Monitors
         [DllImport("libX11")]
         private static extern IntPtr XOpenDisplay(string displayName);
 
+        [DllImport("libX11")]
+        private static extern void XCloseDisplay(IntPtr display);
+
         [DllImport("libXext.so.6")]
         private static extern bool DPMSQueryExtension(IntPtr display, out string dummy1, out string dummy2);
 
@@ -43,14 +46,23 @@ namespace keyboards.Monitors
             if (display == IntPtr.Zero) return Task.FromResult(100D);
             
             var ext = DPMSQueryExtension(display, out var dummy1, out var dummy2);
-                
-            if (!ext) return Task.FromResult(100D);
+
+            if (!ext)
+            {
+                XCloseDisplay(display);
+                return Task.FromResult(100D);
+            }
                 
             var hasDpms = DPMSCapable(display);
-                
-            if (!hasDpms) return Task.FromResult(100D);
+
+            if (!hasDpms)
+            {
+                XCloseDisplay(display);
+                return Task.FromResult(100D);
+            }
                     
             DPMSInfo(display, out var state, out var onOff);
+            XCloseDisplay(display);
             return onOff ? Task.FromResult(state == State.On ? 100D : 0D) : Task.FromResult(100D);
         }
     }
