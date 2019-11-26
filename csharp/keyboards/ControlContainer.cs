@@ -7,7 +7,7 @@ namespace keyboards
     {
         public IFile File(string filename)
         {
-            return new SpecialFile(filename);
+            return new FastFile(filename);
         }
 
         public HashSet<IMonitor> Monitors { get; set; } = new HashSet<IMonitor>();

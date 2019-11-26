@@ -10,7 +10,7 @@ namespace keyboards
             Filename = filename;
         }
 
-        private string Filename { get; }
+        protected string Filename { get; }
 
         public bool Exists => File.Exists(Filename);
 
