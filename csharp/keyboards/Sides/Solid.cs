@@ -9,10 +9,5 @@ namespace keyboards.Sides
         {
             CurrentColor = color;
         }
-
-        public override Task Render(long time, long deltaTime)
-        {
-            return Task.CompletedTask;
-        }
     }
 }

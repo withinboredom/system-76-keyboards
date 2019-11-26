@@ -10,18 +10,13 @@ namespace keyboards.Sides
     /// </summary>
     public abstract class Side : ISide
     {
+        protected bool IsDirty { get; set; }
+        
         /// <summary>
         ///     The current color
         /// </summary>
         public Rgb CurrentColor { get; set; }
-
-        /// <summary>
-        ///     Renders the side
-        /// </summary>
-        /// <param name="time"></param>
-        /// <param name="deltaTime"></param>
-        public abstract Task Render(long time, long deltaTime);
-
+        
         public IFile? Led { get; set; }
 
         /// <summary>
@@ -43,11 +38,14 @@ namespace keyboards.Sides
         /// <returns></returns>
         public async Task Commit(IEnumerable<IFilter> filters)
         {
+            if (!IsDirty) return;
+            
             var commitColor = CurrentColor;
             foreach (var filter in filters) commitColor = await filter.ApplyFilter(commitColor);
 
             var hex = commitColor.Hex;
             if (Led != null) await Led.Commit(hex);
+            IsDirty = false;
         }
     }
 }

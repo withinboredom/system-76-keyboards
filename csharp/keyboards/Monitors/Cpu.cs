@@ -33,6 +33,7 @@ namespace keyboards.Monitors
         {
             _file = Container.File("/proc/stat");
             Container.RegisterActiveMonitor(this);
+            UpdateMode = Mode.PercentageSmooth;
         }
 
         /// <summary>

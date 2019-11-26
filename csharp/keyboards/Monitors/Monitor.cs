@@ -1,15 +1,27 @@
 using System;
 using System.Threading.Tasks;
+using keyboards.Sides;
 
 namespace keyboards.Monitors
 {
     public abstract class Monitor : IMonitor
     {
-        protected IControlContainer Container;
+        protected readonly IControlContainer Container;
+        private readonly MovingAverage _movingAverage;
+
+        protected enum Mode
+        {
+            PercentageRaw,
+            PercentageSmooth,
+            Incremental,
+        }
+
+        protected Mode UpdateMode = Mode.PercentageSmooth;
 
         protected Monitor(IControlContainer container)
         {
             Container = container;
+            _movingAverage = new MovingAverage();
         }
 
         /// <summary>
@@ -29,14 +41,45 @@ namespace keyboards.Monitors
         public async Task CheckForChanges()
         {
             var reading = await GetReading();
-            if (Math.Abs(reading - Percentage) > 1D)
+            var handler = Changed;
+            switch (UpdateMode)
             {
-                var handler = Changed;
+                case Mode.PercentageRaw:
+                    if (Math.Abs(reading - Percentage) > 1D)
+                    {
+                        if (handler == null)
+                            Container.DeregisterActiveMonitor(this);
+                        else
+                            handler(this, Percentage = reading);
+                    }
 
-                if (handler == null)
-                    Container.DeregisterActiveMonitor(this);
-                else
-                    handler(this, Percentage = reading);
+                    break;
+                case Mode.PercentageSmooth:
+                    var smooth = _movingAverage.GetAverage(reading);
+                    if (Math.Abs(smooth - Percentage) > 1D)
+                    {
+                        if (handler == null)
+                        {
+                            Container.DeregisterActiveMonitor(this);
+                        }
+                        else
+                        {
+                            handler(this, Percentage = smooth);
+                        }
+                    }
+
+                    break;
+                        case Mode.Incremental:
+                    if (handler == null)
+                    {
+                        Container.DeregisterActiveMonitor(this);
+                    }
+                    else
+                    {
+                        handler(this, Percentage = reading);
+                    }
+
+                    break;
             }
         }
 

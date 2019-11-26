@@ -11,27 +11,18 @@ namespace keyboards.Sides
         private readonly double _red;
         private readonly double _yellow;
 
-        private readonly MovingAverage _movingAverage;
-
         public MonitorSide(IMonitor monitor, double red = 90, double yellow = 70, double green = 50)
         {
             _red = red;
             _yellow = yellow;
             _green = green;
-            _movingAverage = new MovingAverage();
             monitor.Changed += MonitorOnChanged;
         }
 
-        private double Value { get; set; }
-
         private void MonitorOnChanged(object? sender, double e)
         {
-            Value = e;
-        }
-
-        public override Task Render(long time, long deltaTime)
-        {
-            var value = _movingAverage.GetAverage(Value);
+            IsDirty = true;
+            var value = e;
             if (value < 0) value = 0;
             else if (value >= 100) value = 100;
 
@@ -54,8 +45,6 @@ namespace keyboards.Sides
                     0
                 );
             else if (value >= _red) CurrentColor = new Rgb(255, 0, 0);
-
-            return Task.CompletedTask;
         }
     }
 }

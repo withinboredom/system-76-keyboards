@@ -23,6 +23,7 @@ namespace keyboards.Monitors
         {
             _file = Container.File("/proc/meminfo");
             Container.RegisterActiveMonitor(this);
+            UpdateMode = Mode.PercentageSmooth;
         }
 
         /// <summary>

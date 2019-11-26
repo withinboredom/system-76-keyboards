@@ -27,7 +27,6 @@ namespace UnitTests.Sides
         public void TestSolidColor()
         {
             var side = new Solid(Rgb.FromHex("FFFFFF")) {Led = _fixtureFile};
-            side.Render(0, 0);
             side.Commit(new IFilter[] { });
             Assert.AreEqual("FFFFFF", side.Led.Contents);
         }

@@ -30,17 +30,6 @@ namespace keyboards.Keyboards
 
         public IFilter[] Filters { get; set; } = { };
 
-        /// <summary>
-        ///     Renders a keyboard
-        /// </summary>
-        /// <param name="time">The current time in milliseconds</param>
-        /// <param name="deltaTime"></param>
-        private Task Render(long time, long deltaTime)
-        {
-            var tasks = Sides.Select(s => s.Render(time, deltaTime));
-            return Task.WhenAll(tasks);
-        }
-
         private Task PrepareSides()
         {
             var sides = Sides.ToArray();
@@ -69,6 +58,8 @@ namespace keyboards.Keyboards
 
         public async Task UpdateSensors(CancellationToken token)
         {
+            return;
+            await PrepareSides();
             var update = _container.Monitors.Select(m => m.CheckForChanges());
 
             while (!token.IsCancellationRequested && _container.Monitors.Count != 0)
@@ -90,12 +81,13 @@ namespace keyboards.Keyboards
         {
             await PrepareSides();
 
+            var update = _container.Monitors.Select(m => m.CheckForChanges());
             var lastTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
             while (!token.IsCancellationRequested)
             {
                 var startRender = DateTime.Now;
                 var time = startRender.Ticks / TimeSpan.TicksPerMillisecond;
-                await Render(time, time - lastTime);
+                await Task.WhenAll(update);
                 await PreApplyFilters(time);
                 await Commit();
                 var timeToNext = startRender + TimeSpan.FromSeconds(Frequency) - DateTime.Now;
