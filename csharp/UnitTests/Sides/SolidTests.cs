@@ -9,7 +9,7 @@ namespace UnitTests.Sides
 {
     public class SolidTests
     {
-        private readonly IFile _fixtureFile = new SpecialFile("test-color");
+        private readonly IFile _fixtureFile = new FakeFile("test-color");
 
         [SetUp]
         public async Task CreateFixture()

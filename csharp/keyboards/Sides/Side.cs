@@ -10,7 +10,7 @@ namespace keyboards.Sides
     /// </summary>
     public abstract class Side : ISide
     {
-        protected bool IsDirty { get; set; }
+        protected bool IsDirty { get; set; } = true;
         
         /// <summary>
         ///     The current color
