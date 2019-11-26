@@ -16,11 +16,14 @@ namespace keyboards
         private static readonly IFile PidFile = new SpecialFile("/run/keyboard-colors.pid");
         private static CancellationToken _token;
 
-        private static IFilter[] GetFilters(IEnumerable<Options.Filters>? filters, IControlContainer container)
+        private static IFilter[] GetFilters(Options options, IControlContainer container)
         {
             var arr = new List<IFilter>();
-            if (filters == null) return arr.ToArray();
-            foreach (var filter in filters)
+            
+            if(!options.NoPower) arr.Add(new PowerFilter(container));
+            
+            if (options.Filter == null) return arr.ToArray();
+            foreach (var filter in options.Filter)
                 switch (filter)
                 {
                     case Options.Filters.Heartbeat:
@@ -45,12 +48,12 @@ namespace keyboards
                 Environment.Exit(1);
             }
 
-            if (PidFile.Exists)
+            /*if (PidFile.Exists)
             {
                 Console.WriteLine(
                     "The service is already running, did you mean to start it again? Hint: `keyboard-color stop`");
                 Environment.Exit(1);
-            }
+            }*/
 
             if (options.Install)
             {
@@ -102,12 +105,12 @@ namespace keyboards
             return Parser.Default.ParseArguments<RainbowOptions, SolidOptions, MonitorOptions, StopOptions>(args)
                 .MapResult(
                     (MonitorOptions o) => RunOrInstall(args, o,
-                        new Monitor(container) {Frequency = FromFps(o.Frequency), Filters = GetFilters(o.Filter, container)}),
+                        new Monitor(container) {Frequency = FromFps(o.Frequency), Filters = GetFilters(o, container)}),
                     (RainbowOptions o) => RunOrInstall(args, o,
-                        new Rainbow(container) {Frequency = FromFps(o.Frequency), Filters = GetFilters(o.Filter, container)}),
+                        new Rainbow(container) {Frequency = FromFps(o.Frequency), Filters = GetFilters(o, container)}),
                     (SolidOptions o) => RunOrInstall(args, o,
                         new SolidColor(container, o.Color != null ? Rgb.FromHex(o.Color) : Rgb.Empty)
-                            {Frequency = FromFps(o.Frequency), Filters = GetFilters(o.Filter, container)}),
+                            {Frequency = FromFps(o.Frequency), Filters = GetFilters(o, container)}),
                     (StopOptions o) =>
                     {
                         Process.Start("systemctl", "stop keyboard-colors.service")?.WaitForExit();
@@ -123,18 +126,21 @@ namespace keyboards
             {
                 Heartbeat,
                 WashedOut,
-                BlackWhite
+                BlackWhite,
             }
 
             [Option('f', "filter", Required = false, HelpText = "Specify a filter to use", Separator = ',')]
             public IEnumerable<Filters>? Filter { get; set; }
 
-            [Option('s', "fps", Required = false, Default = 10,
+            [Option('F', "fps", Required = false, Default = 10,
                 HelpText = "Determine the delay between frames")]
             public double Frequency { get; set; }
 
             [Option('i', "install", Required = false, HelpText = "Install the active command")]
             public bool Install { get; set; }
+            
+            [Option('p', "noPower", Required = false, HelpText = "Disable fade out when the screen turns off")]
+            public bool NoPower { get; set; }
         }
 
         [Verb("rainbow", HelpText = "Turn on the rainbow!")]
