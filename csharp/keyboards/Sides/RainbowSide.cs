@@ -50,7 +50,6 @@ namespace keyboards.Sides
 
         private void MonitorOnChanged(object? sender, double e)
         {
-            Console.WriteLine("Update!");
             IsDirty = true;
             var time = e + _timeShift;
 

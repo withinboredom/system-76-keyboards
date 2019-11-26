@@ -56,22 +56,6 @@ namespace keyboards.Keyboards
             return Task.WhenAll(commits);
         }
 
-        public async Task UpdateSensors(CancellationToken token)
-        {
-            return;
-            await PrepareSides();
-            var update = _container.Monitors.Select(m => m.CheckForChanges());
-
-            while (!token.IsCancellationRequested && _container.Monitors.Count != 0)
-            {
-                var start = DateTime.Now;
-                await Task.WhenAll(update);
-                var timeToNext = start + TimeSpan.FromSeconds(Frequency) - DateTime.Now;
-                if (timeToNext.Ticks > 0)
-                    await Task.Delay((int)timeToNext.TotalMilliseconds, token);
-            }
-        }
-
         /// <summary>
         ///     Run the keyboard
         /// </summary>
@@ -80,7 +64,7 @@ namespace keyboards.Keyboards
         public async Task<int> Run(CancellationToken token)
         {
             await PrepareSides();
-
+            
             var update = _container.Monitors.Select(m => m.CheckForChanges());
             var lastTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
             while (!token.IsCancellationRequested)

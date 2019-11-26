@@ -64,13 +64,18 @@ namespace keyboards
 
             try
             {
-                Task.WaitAll(new[] {kb.Run(_token), kb.UpdateSensors(_token)}, _token);
+                Task.WaitAll(new[] {kb.Run(_token)}, _token);
                 return 0;
             }
             catch (OperationCanceledException)
             {
                 return 1;
             }
+        }
+
+        private static double FromFps(double fps)
+        {
+            return 1D / fps;
         }
 
         private static int Main(string[] args)
@@ -97,12 +102,12 @@ namespace keyboards
             return Parser.Default.ParseArguments<RainbowOptions, SolidOptions, MonitorOptions, StopOptions>(args)
                 .MapResult(
                     (MonitorOptions o) => RunOrInstall(args, o,
-                        new Monitor(container) {Frequency = o.Frequency, Filters = GetFilters(o.Filter, container)}),
+                        new Monitor(container) {Frequency = FromFps(o.Frequency), Filters = GetFilters(o.Filter, container)}),
                     (RainbowOptions o) => RunOrInstall(args, o,
-                        new Rainbow(container) {Frequency = o.Frequency, Filters = GetFilters(o.Filter, container)}),
+                        new Rainbow(container) {Frequency = FromFps(o.Frequency), Filters = GetFilters(o.Filter, container)}),
                     (SolidOptions o) => RunOrInstall(args, o,
                         new SolidColor(container, o.Color != null ? Rgb.FromHex(o.Color) : Rgb.Empty)
-                            {Frequency = o.Frequency, Filters = GetFilters(o.Filter, container)}),
+                            {Frequency = FromFps(o.Frequency), Filters = GetFilters(o.Filter, container)}),
                     (StopOptions o) =>
                     {
                         Process.Start("systemctl", "stop keyboard-colors.service")?.WaitForExit();
@@ -124,7 +129,7 @@ namespace keyboards
             [Option('f', "filter", Required = false, HelpText = "Specify a filter to use", Separator = ',')]
             public IEnumerable<Filters>? Filter { get; set; }
 
-            [Option('h', "frequency", Required = false, Default = 0.25,
+            [Option('s', "fps", Required = false, Default = 10,
                 HelpText = "Determine the delay between frames")]
             public double Frequency { get; set; }
 
