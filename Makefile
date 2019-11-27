@@ -2,9 +2,12 @@
 
 SERVICE = keyboard-color
 
-${SERVICE}: csharp/keyboards/*.cs csharp/keyboards/*/*.cs
+${SERVICE}: csharp/keyboards/*.cs csharp/keyboards/*/*.cs csharp/keyboards/keyboards.csproj
 	cd csharp/keyboards && dotnet publish -r linux-x64 -c Release -o ${SERVICE}
 	mv csharp/keyboards/${SERVICE}/${SERVICE} ${SERVICE}
+
+release: csharp/keyboards/*.cs csharp/keyboards/*/*.cs csharp/keyboards/keyboards.csproj version
+	@test -z "$(shell git diff-index --name-only HEAD --)" || echo "Cannot build release with changes" && exit 1
 
 deb/usr/local/bin/keyboard-color: ${SERVICE}
 	mkdir -p deb/usr/local/bin
@@ -24,6 +27,6 @@ clean:
 	cd csharp/keyboards && dotnet clean
 	rm -rf ${SERVICE}
 
-version: csharp/version/*.cs
+version: csharp/version/*.cs csharp/version/version.csproj
 	cd csharp/version && dotnet publish -r linux-x64 -c Release -o version
 	mv csharp/version/version/version version
