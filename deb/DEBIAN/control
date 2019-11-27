@@ -2,7 +2,7 @@ Package: s76-keyboard-colors
 Version: _version_
 Section: utilities
 Priority: optional
-Architecture: all
+Architecture: any-amd64
 Maintainer: Rob Landers 
 Description: Animated colors for System76 machines
  This package allows you to have animated colors on your keyboard.
