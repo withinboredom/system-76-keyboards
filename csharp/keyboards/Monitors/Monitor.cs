@@ -6,15 +6,8 @@ namespace keyboards.Monitors
 {
     public abstract class Monitor : IMonitor
     {
-        protected readonly IControlContainer Container;
         private readonly MovingAverage _movingAverage;
-
-        protected enum Mode
-        {
-            PercentageRaw,
-            PercentageSmooth,
-            Incremental,
-        }
+        protected readonly IControlContainer Container;
 
         protected Mode UpdateMode = Mode.PercentageSmooth;
 
@@ -59,25 +52,17 @@ namespace keyboards.Monitors
                     if (Math.Abs(smooth - Percentage) > 1D)
                     {
                         if (handler == null)
-                        {
                             Container.DeregisterActiveMonitor(this);
-                        }
                         else
-                        {
                             handler(this, Percentage = smooth);
-                        }
                     }
 
                     break;
-                        case Mode.Incremental:
+                case Mode.Incremental:
                     if (handler == null)
-                    {
                         Container.DeregisterActiveMonitor(this);
-                    }
                     else
-                    {
                         handler(this, Percentage = reading);
-                    }
 
                     break;
             }
@@ -88,5 +73,12 @@ namespace keyboards.Monitors
         /// </summary>
         /// <returns></returns>
         protected abstract Task<double> GetReading();
+
+        protected enum Mode
+        {
+            PercentageRaw,
+            PercentageSmooth,
+            Incremental
+        }
     }
 }

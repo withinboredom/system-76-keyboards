@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using keyboards.ColorSpace;
 using keyboards.Monitors;
 
@@ -50,7 +49,6 @@ namespace keyboards.Sides
 
         private void MonitorOnChanged(object? sender, double e)
         {
-            IsDirty = true;
             var time = e + _timeShift;
 
             CurrentColor = new Rgb(

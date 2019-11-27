@@ -7,6 +7,7 @@ using CommandLine;
 using keyboards.ColorSpace;
 using keyboards.Filters;
 using keyboards.Keyboards;
+using keyboards.Monitors;
 using Monitor = keyboards.Keyboards.Monitor;
 
 namespace keyboards
@@ -16,16 +17,20 @@ namespace keyboards
         private static readonly IFile PidFile = new SpecialFile("/run/keyboard-colors.pid");
         private static CancellationToken _token;
 
-        private static IFilter[] GetFilters(IEnumerable<Options.Filters>? filters, IControlContainer container)
+        private static IFilter[] GetFilters(Options options, IControlContainer container)
         {
             var arr = new List<IFilter>();
-            if (filters == null) return arr.ToArray();
-            foreach (var filter in filters)
+
+            if (!options.NoPower && Installer.RootHasPermission())
+                arr.Add(new PowerFilter(container, Display.Instance(container)));
+            else if (!options.NoPower && !Installer.RootHasPermission())
+                Console.WriteLine(
+                    "Root doesn't have permission to see your DPMS state, to give it permission run as your user: xhost si:localuser:root");
+
+            if (options.Filter == null) return arr.ToArray();
+            foreach (var filter in options.Filter)
                 switch (filter)
                 {
-                    case Options.Filters.Heartbeat:
-                        arr.Add(new HeartFilter(container));
-                        break;
                     case Options.Filters.WashedOut:
                         arr.Add(new WashedOut());
                         break;
@@ -55,8 +60,7 @@ namespace keyboards
             if (options.Install)
             {
                 Installer.CreateParametersFromOptions(args);
-                Installer.PutMeInRightSpot();
-                Installer.CreateService();
+                Installer.Install();
                 return 0;
             }
 
@@ -99,15 +103,16 @@ namespace keyboards
 
             var container = new ControlContainer();
 
-            return Parser.Default.ParseArguments<RainbowOptions, SolidOptions, MonitorOptions, StopOptions>(args)
+            return Parser.Default
+                .ParseArguments<RainbowOptions, SolidOptions, MonitorOptions, StopOptions>(args)
                 .MapResult(
                     (MonitorOptions o) => RunOrInstall(args, o,
-                        new Monitor(container) {Frequency = FromFps(o.Frequency), Filters = GetFilters(o.Filter, container)}),
+                        new Monitor(container) {Frequency = FromFps(o.Frequency), Filters = GetFilters(o, container)}),
                     (RainbowOptions o) => RunOrInstall(args, o,
-                        new Rainbow(container) {Frequency = FromFps(o.Frequency), Filters = GetFilters(o.Filter, container)}),
+                        new Rainbow(container) {Frequency = FromFps(o.Frequency), Filters = GetFilters(o, container)}),
                     (SolidOptions o) => RunOrInstall(args, o,
                         new SolidColor(container, o.Color != null ? Rgb.FromHex(o.Color) : Rgb.Empty)
-                            {Frequency = FromFps(o.Frequency), Filters = GetFilters(o.Filter, container)}),
+                            {Frequency = FromFps(o.Frequency), Filters = GetFilters(o, container)}),
                     (StopOptions o) =>
                     {
                         Process.Start("systemctl", "stop keyboard-colors.service")?.WaitForExit();
@@ -121,7 +126,6 @@ namespace keyboards
         {
             public enum Filters
             {
-                Heartbeat,
                 WashedOut,
                 BlackWhite
             }
@@ -129,12 +133,15 @@ namespace keyboards
             [Option('f', "filter", Required = false, HelpText = "Specify a filter to use", Separator = ',')]
             public IEnumerable<Filters>? Filter { get; set; }
 
-            [Option('s', "fps", Required = false, Default = 10,
+            [Option('F', "fps", Required = false, Default = 10,
                 HelpText = "Determine the delay between frames")]
             public double Frequency { get; set; }
 
             [Option('i', "install", Required = false, HelpText = "Install the active command")]
             public bool Install { get; set; }
+
+            [Option('p', "noPower", Required = false, HelpText = "Disable fade out when the screen turns off")]
+            public bool NoPower { get; set; }
         }
 
         [Verb("rainbow", HelpText = "Turn on the rainbow!")]

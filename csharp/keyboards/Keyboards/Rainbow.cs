@@ -19,9 +19,9 @@ namespace keyboards.Keyboards
 
             Sides = new[]
             {
-                new RainbowSide(Time.Instance(container),  rp, gp, bp, 0),
-                new RainbowSide(Time.Instance(container),rp, gp, bp, 100),
-                new RainbowSide(Time.Instance(container),rp, gp, bp, 200)
+                new RainbowSide(Time.Instance(container), rp, gp, bp, 0),
+                new RainbowSide(Time.Instance(container), rp, gp, bp, 100),
+                new RainbowSide(Time.Instance(container), rp, gp, bp, 200)
             };
         }
     }
