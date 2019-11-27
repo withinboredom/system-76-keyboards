@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace keyboards
 {
@@ -26,7 +27,7 @@ WantedBy=multi-user.target
             Parameters = string.Join(' ', options.Where(s => !s.Contains("--install") || !s.Contains("-i")).ToArray());
         }
 
-        internal static void PutMeInRightSpot()
+        private static void PutMeInRightSpot()
         {
             var path = Environment.CurrentDirectory + "/keyboard-color";
 
@@ -46,26 +47,53 @@ WantedBy=multi-user.target
                 Console.WriteLine("Please delete /opt/keyboard-colors/keyboard-color.php as it's no longer needed.");
         }
 
-        internal static void CreateService()
+        internal static bool RootHasPermission()
+        {
+            var process = Process.Start(new ProcessStartInfo("xhost") {RedirectStandardOutput = true});
+
+            if (process == null) return false;
+            
+            if (!process.WaitForExit((int) TimeSpan.FromSeconds(10).TotalMilliseconds))
+                return false;
+
+            var result = process.StandardOutput.ReadToEnd();
+            return result.Contains("SI:localuser:root");
+        }
+
+        private static bool IsInProfile()
+        {
+            var contents = new SpecialFile("~/.profile").Contents;
+            return contents.Contains("+SI:localuser:root");
+        }
+
+        private static void CreateService()
         {
             var servicePath = "/etc/systemd/system/keyboard-colors.service";
             File.WriteAllText(servicePath, SystemD);
-            Console.WriteLine("Run `systemctl enable keyboard-colors.service` to start at boot");
-            Console.WriteLine("Run `systemctl restart keyboard-colors.service` to start right now");
-            Console.WriteLine("Would you like to start the service at bootup? (y/n)");
-            var yn = Console.ReadKey(true);
-            if (yn.Key == ConsoleKey.Y)
-            {
-                Console.WriteLine("Executing: systemctl enable keyboard-colors.service");
-                Process.Start("systemctl", "enable keyboard-colors.service")?.WaitForExit();
-            }
+        }
 
-            Console.WriteLine("Would you like to start the service now? (y/n)");
-            yn = Console.ReadKey(true);
-            if (yn.Key == ConsoleKey.Y)
+        internal static void Install()
+        {
+            Console.WriteLine("Copying `keyboard-color` to /usr/local/bin");
+            PutMeInRightSpot();
+
+            Console.WriteLine("Creating service file in /etc/systemd/system/keyboard-colors.service");
+            CreateService();
+
+            Console.WriteLine("If you want to start this on boot run:");
+            Console.WriteLine("   sudo systemctl enable keyboard-colors");
+
+            Console.WriteLine("If you want to start the service right now, run:");
+            Console.WriteLine("   sudo systemctl start keyboard-colors");
+
+            if (!RootHasPermission() || !IsInProfile())
             {
-                Console.WriteLine("Executing: systemctl restart keyboard-colors.service");
-                Process.Start("systemctl", "restart keyboard-colors.service")?.WaitForExit();
+                Console.WriteLine("I've detected that root doesn't have access to your x-session. If you would like to\n" +
+                                  "turn off the keyboard backlights when the screen is off, you'll need to give root\n" +
+                                  "permission to access it. This might have security implications that you'll need to\n" +
+                                  "evaluate for yourself. To give root permission to your screen until you logout:");
+                Console.WriteLine("   xhost +SI:localuser:root");
+                Console.WriteLine("You can add it to your ~/.profile if you'd like to make it permanent.");
             }
         }
     }

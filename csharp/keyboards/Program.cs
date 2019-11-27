@@ -21,7 +21,8 @@ namespace keyboards
         {
             var arr = new List<IFilter>();
 
-            if (!options.NoPower) arr.Add(new PowerFilter(container, Display.Instance(container)));
+            if (!options.NoPower && Installer.RootHasPermission()) arr.Add(new PowerFilter(container, Display.Instance(container)));
+            else if(!options.NoPower && !Installer.RootHasPermission()) Console.WriteLine("Root doesn't have permission to see your DPMS state, to give it permission run as your user: xhost si:localuser:root");
 
             if (options.Filter == null) return arr.ToArray();
             foreach (var filter in options.Filter)
@@ -46,18 +47,17 @@ namespace keyboards
                 Environment.Exit(1);
             }
 
-            /*if (PidFile.Exists)
+            if (PidFile.Exists)
             {
                 Console.WriteLine(
                     "The service is already running, did you mean to start it again? Hint: `keyboard-color stop`");
                 Environment.Exit(1);
-            }*/
+            }
 
             if (options.Install)
             {
                 Installer.CreateParametersFromOptions(args);
-                Installer.PutMeInRightSpot();
-                Installer.CreateService();
+                Installer.Install();
                 return 0;
             }
 
