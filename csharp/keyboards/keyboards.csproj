@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <Version>1.0.1</Version>
+        <Version>_version_</Version>
         <TargetFramework>netcoreapp3.0</TargetFramework>
         <LangVersion>8</LangVersion>
         <Nullable>enable</Nullable>
@@ -12,10 +12,10 @@
         <Title>Keyboard Colors</Title>
         <Company>withinboredom (Rob Landers)</Company>
         <Product>keyboard-colors</Product>
-        <AssemblyVersion>1.0.1</AssemblyVersion>
-        <FileVersion>1.0.1</FileVersion>
+        <AssemblyVersion>1.0</AssemblyVersion>
+        <FileVersion>1.0</FileVersion>
         <NeutralLanguage>en</NeutralLanguage>
-        <PackageVersion>1.0.1</PackageVersion>
+        <PackageVersion>1.0</PackageVersion>
         <PackageProjectUrl>https://github.com/withinboredom/system-76-keyboards</PackageProjectUrl>
         <PackageLicenseUrl>https://github.com/withinboredom/system-76-keyboards/blob/master/LICENSE</PackageLicenseUrl>
         <RepositoryUrl>https://github.com/withinboredom/system-76-keyboards</RepositoryUrl>
