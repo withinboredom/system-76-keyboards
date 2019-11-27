@@ -16,8 +16,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "version", "version\version.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "debian", "debian", "{5C7934AE-7958-4871-B8EB-950824ABEDDA}"
 ProjectSection(SolutionItems) = preProject
-	..\deb\DEBIAN\control = ..\deb\DEBIAN\control
-	..\deb\DEBIAN\rules = ..\deb\DEBIAN\rules
+	..\debian\changelog = ..\debian\changelog
+	..\debian\control = ..\debian\control
+	..\debian\rules = ..\debian\rules
 EndProjectSection
 EndProject
 Global

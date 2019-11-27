@@ -1,0 +1,12 @@
+Source: s76-keyboard-colors  
+Maintainer: Rob Landers <landers.robert@gmail.com>
+Build-Depends: debhelper (>= 8.0.0)
+Standards-Version: 3.9.3
+Section: utils
+
+Package: s76-keyboard-colors
+Priority: extra  
+Architecture: any-amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}  
+Description: Beautiful colors for system76 keyboards
+ Makes the world a better place
