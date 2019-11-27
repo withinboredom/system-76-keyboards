@@ -3,7 +3,8 @@ Version: _version_
 Section: utilities
 Priority: optional
 Architecture: any-amd64
-Depends: libxext6 libx11-6
+Depends: libxext6
+Depends: libx11-6
 Maintainer: Rob Landers 
 Description: Animated colors for System76 machines
  This package allows you to have animated colors on your keyboard.
