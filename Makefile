@@ -21,7 +21,7 @@ deb/etc/systemd/system/keyboard-colors.service: keyboard-colors.service
 	mkdir -p deb/etc/systemd/system
 	cp keyboard-colors.service deb/etc/systemd/system/keyboard-colors.service
 
-deb/etc/keyboard-colors.json: csharp/keyboards/settings.release.json
+deb/etc/keyboard-color.json: csharp/keyboards/settings.release.json
 	mkdir -p deb/etc
 	cp csharp/keyboards/settings.release.json deb/etc/keyboard-colors.json
 
@@ -33,7 +33,8 @@ package.deb: deb/usr/local/bin/keyboard-color deb/etc/systemd/system/keyboard-co
 
 clean:
 	cd csharp/keyboards && dotnet clean
-	rm -rf ${SERVICE}
+	cd csharp/version && dotnet clean
+	rm -rf ${SERVICE} deb/etc deb/usr release version package.deb
 
 version: csharp/version/*.cs csharp/version/version.csproj
 	cd csharp/version && dotnet publish -r linux-x64 -c Release -o version
