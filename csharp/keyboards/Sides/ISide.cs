@@ -21,7 +21,7 @@ namespace keyboards.Sides
         IFile? Led { get; set; }
 
         Task Commit(IEnumerable<IFilter> filters);
-        
+
         /// <summary>
         ///     Load the active led value
         /// </summary>

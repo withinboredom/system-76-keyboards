@@ -1,12 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace keyboards.Sides
 {
     public class MovingAverage
     {
-        private double _average = 0;
+        private double _average;
         private double _c;
         private bool _ready;
 
@@ -15,7 +13,7 @@ namespace keyboards.Sides
             var now = DateTime.Now.Ticks / (double) TimeSpan.TicksPerSecond;
             var c = now - _c;
             _c = now;
-            
+
             if (!_ready)
             {
                 _ready = true;
@@ -26,7 +24,7 @@ namespace keyboards.Sides
             _average = nextAverage;
 
             if (!(c < 1D)) return newValue;
-            
+
             return Math.Max(0, Math.Min(100, _average));
         }
     }

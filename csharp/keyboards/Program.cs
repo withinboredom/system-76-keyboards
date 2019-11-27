@@ -21,8 +21,11 @@ namespace keyboards
         {
             var arr = new List<IFilter>();
 
-            if (!options.NoPower && Installer.RootHasPermission()) arr.Add(new PowerFilter(container, Display.Instance(container)));
-            else if(!options.NoPower && !Installer.RootHasPermission()) Console.WriteLine("Root doesn't have permission to see your DPMS state, to give it permission run as your user: xhost si:localuser:root");
+            if (!options.NoPower && Installer.RootHasPermission())
+                arr.Add(new PowerFilter(container, Display.Instance(container)));
+            else if (!options.NoPower && !Installer.RootHasPermission())
+                Console.WriteLine(
+                    "Root doesn't have permission to see your DPMS state, to give it permission run as your user: xhost si:localuser:root");
 
             if (options.Filter == null) return arr.ToArray();
             foreach (var filter in options.Filter)

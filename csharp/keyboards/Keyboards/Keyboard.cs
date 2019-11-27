@@ -64,7 +64,7 @@ namespace keyboards.Keyboards
         public async Task<int> Run(CancellationToken token)
         {
             await PrepareSides();
-            
+
             var update = _container.Monitors.Select(m => m.CheckForChanges());
             var lastTime = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
             while (!token.IsCancellationRequested)
@@ -76,7 +76,7 @@ namespace keyboards.Keyboards
                 await Commit();
                 var timeToNext = startRender + TimeSpan.FromSeconds(Frequency) - DateTime.Now;
                 if (timeToNext.Ticks > 0)
-                    await Task.Delay((int)timeToNext.TotalMilliseconds, token);
+                    await Task.Delay((int) timeToNext.TotalMilliseconds, token);
             }
 
             return 0;

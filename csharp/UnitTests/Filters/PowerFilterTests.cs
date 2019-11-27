@@ -1,9 +1,7 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using keyboards.ColorSpace;
 using keyboards.Filters;
-using keyboards.Monitors;
 using NUnit.Framework;
 
 namespace UnitTests.Filters
@@ -15,13 +13,13 @@ namespace UnitTests.Filters
             var container = new FakeContainer();
             return new FakeMonitor(container);
         }
-        
+
         [Test]
         public async Task FadeIn()
         {
             var monitor = GetMonitor();
             monitor.Reading = 100;
-            
+
             var filter = new PowerFilter(new FakeContainer(), monitor);
             await filter.PreApply(0);
             var color = await filter.ApplyFilter(Rgb.FromHex("FFFFFF"));
@@ -33,7 +31,7 @@ namespace UnitTests.Filters
         {
             var monitor = GetMonitor();
             monitor.Reading = 100;
-            
+
             var filter = new PowerFilter(new FakeContainer(), monitor);
             var color = Rgb.Empty;
 
@@ -44,7 +42,7 @@ namespace UnitTests.Filters
                 await filter.PreApply(0);
                 color = await filter.ApplyFilter(Rgb.FromHex("FFFFFF"));
             }
-            
+
             Assert.AreEqual(Rgb.FromHex("FFFFFF"), color);
 
             monitor.Reading = 0;
@@ -56,7 +54,7 @@ namespace UnitTests.Filters
                 await filter.PreApply(0);
                 color = await filter.ApplyFilter(Rgb.FromHex("FFFFFF"));
             }
-            
+
             Assert.AreEqual(Rgb.FromHex("000000"), color);
         }
     }
