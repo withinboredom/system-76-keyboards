@@ -7,7 +7,7 @@ ${SERVICE}: csharp/keyboards/*.cs csharp/keyboards/*/*.cs csharp/keyboards/keybo
 	mv csharp/keyboards/${SERVICE}/${SERVICE} ${SERVICE}
 
 release: csharp/keyboards/*.cs csharp/keyboards/*/*.cs csharp/keyboards/keyboards.csproj version
-	@test -z "$(shell git diff-index --name-only HEAD --)" || echo "Cannot build release with changes" && exit 1
+	@test -z "$(shell git diff-index --name-only HEAD --)" || exit 2
 	echo "hello world"
 
 deb/usr/local/bin/keyboard-color: ${SERVICE}
