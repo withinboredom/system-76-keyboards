@@ -28,8 +28,7 @@ deb/etc/keyboard-colors.json: csharp/keyboards/settings.release.json
 package.deb: deb/usr/local/bin/keyboard-color deb/etc/systemd/system/keyboard-colors.service deb/etc/keyboard-colors.json
 	@test -z "$(shell git diff-index --name-only HEAD --)" || exit 2
 	./version
-	dpkg --build deb --simulate
-	mv deb.deb package.deb
+	dpkg --build deb package.deb
 
 clean:
 	cd csharp/keyboards && dotnet clean
