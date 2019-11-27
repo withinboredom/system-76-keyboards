@@ -1,16 +1,15 @@
 {
     "Logging": "Debug",
-    "Filters": [],
+    "Filters": [
+    ],
     "DimOnSleep": true,
     "Mode": "SolidColor",
     "FPS": 10,
     "Options": {
         "SolidColor": {
-            "Colors": {
-                "Left": "#ABABAB",
-                "Center": "#ABABAB",
-                "Right": "#ABABAB"
-            }
+            "LeftOrSingle": "#ABABAB",
+            "Center": "#ABABAB",
+            "Right": "#ABABAB"
         },
         "Rainbow": {
             "RedPhase": 0.0003,
@@ -22,7 +21,7 @@
                 "Red": 95,
                 "Yellow": 75,
                 "Green": 50,
-                "Position": "Left"
+                "Position": "LeftOrSingle"
             },
             "Memory": {
                 "Red": 80,

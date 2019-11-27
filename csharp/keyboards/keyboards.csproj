@@ -45,6 +45,7 @@
       <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.0.1" />
       <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.0.1" />
       <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.0.1" />
+      <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.0.1" />
     </ItemGroup>
 
     <ItemGroup>

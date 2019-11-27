@@ -49,10 +49,11 @@ namespace keyboards
             return arr.ToArray();
         }
 
-        private static void ParseError(string key, string reason)
+        public static bool ParseError(string key, string reason)
         {
             Console.Error.WriteLine($"Unable to parse {key}: {reason}");
             Environment.Exit(1);
+            return true;
         }
         
         private static Keyboard GetKeyboard(IControlContainer container, IConfiguration configuration)
@@ -74,8 +75,13 @@ namespace keyboards
             switch (configuration.GetSection("Mode").Value)
             {
                 case "SolidColor":
-                    var section = options.GetSection("SolidColor");
-                    keyboard = SolidColor.ParseConfiguration(container, section);
+                    keyboard = new SolidColor(container, options);
+                    break;
+                case "Rainbow":
+                    keyboard = new Rainbow(container, options);
+                    break;
+                case "Monitor":
+                    keyboard = new Monitor(container, options);
                     break;
                 default:
                     ParseError("Mode", $"{configuration.GetSection("Mode")} is not a valid mode.");

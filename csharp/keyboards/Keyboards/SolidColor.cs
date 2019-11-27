@@ -4,35 +4,37 @@ using Microsoft.Extensions.Configuration;
 
 namespace keyboards.Keyboards
 {
+    /// <inheritdoc />
     public class SolidColor : Keyboard
     {
-        public static SolidColor ParseConfiguration(IControlContainer container, IConfigurationSection section)
+        private class SolidColorConfiguration
         {
-            var colors = section.GetSection("Colors");
-            var left = colors.GetSection("Left");
-            var center = colors.GetSection("Center");
-            var right = colors.GetSection("Right");
-
-            return new SolidColor(container)
-            {
-                Sides = new[]
-                {
-                    new Solid(Rgb.FromHex(left.Value)),
-                    new Solid(Rgb.FromHex(center.Value)),
-                    new Solid(Rgb.FromHex(right.Value)),
-                }
-            };
+            public string LeftOrSingle { get; set; } = "#ABABAB";
+            public string Center { get; set; } = "#ABABAB";
+            public string Right { get; set; } = "#ABABAB";
         }
+
+        private readonly SolidColorConfiguration _colorConfiguration = new SolidColorConfiguration();
         
-        public SolidColor(IControlContainer container) : base(container)
+        private void Init()
         {
-            return;/*
             Sides = new[]
             {
-                new Solid(color),
-                new Solid(color),
-                new Solid(color)
-            };*/
+                new Solid(Rgb.FromHex(_colorConfiguration.LeftOrSingle)),
+                new Solid(Rgb.FromHex(_colorConfiguration.Center)),
+                new Solid(Rgb.FromHex(_colorConfiguration.Right)),
+            };
+        }
+
+        public SolidColor(IControlContainer container, IConfiguration configuration) : base(container)
+        {
+            _colorConfiguration = configuration.GetSection("SolidColor").Get<SolidColorConfiguration>();
+            Init();
+        }
+
+        public SolidColor(IControlContainer container) : base(container)
+        {
+            Init();
         }
     }
 }
