@@ -3,11 +3,9 @@
 SERVICE = keyboard-color
 
 release: csharp/keyboards/*.cs csharp/keyboards/*/*.cs csharp/keyboards/keyboards.csproj version
-	@test -z "$(shell git diff-index --name-only HEAD --)" || exit 2
 	./version
 	${MAKE} ${SERVICE}
 	mv ${SERVICE} release
-	git reset HEAD --hard
 
 ${SERVICE}: csharp/keyboards/*.cs csharp/keyboards/*/*.cs csharp/keyboards/keyboards.csproj
 	cd csharp/keyboards && dotnet publish -r linux-x64 -c Release -o ${SERVICE}
@@ -26,10 +24,8 @@ ${DESTDIR}/etc/keyboard-color.json: csharp/keyboards/settings.release.json
 	cp csharp/keyboards/settings.release.json ${DESTDIR}/etc/keyboard-color.json
 
 package.deb: deb/usr/local/bin/keyboard-color deb/etc/systemd/system/keyboard-colors.service deb/etc/keyboard-color.json deb/DEBIAN/control
-	@test -z "$(shell git diff-index --name-only HEAD --)" || exit 2
 	./version
 	dpkg --build deb package.deb
-	git reset HEAD --hard
 
 clean:
 	cd csharp/keyboards && dotnet clean
