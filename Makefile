@@ -11,9 +11,9 @@ ${SERVICE}: csharp/keyboards/*.cs csharp/keyboards/*/*.cs csharp/keyboards/keybo
 	cd csharp/keyboards && dotnet publish -r linux-x64 -c Release -o ${SERVICE}
 	mv csharp/keyboards/${SERVICE}/${SERVICE} ${SERVICE}
 
-${DESTDIR}/usr/local/bin/keyboard-color: release
-	mkdir -p ${DESTDIR}/usr/local/bin
-	cp release ${DESTDIR}/usr/local/bin/keyboard-color
+${DESTDIR}/bin/keyboard-color: release
+	mkdir -p ${DESTDIR}/bin
+	cp release ${DESTDIR}/bin/keyboard-color
 
 ${DESTDIR}/etc/systemd/system/keyboard-colors.service: keyboard-colors.service
 	mkdir -p ${DESTDIR}/etc/systemd/system
@@ -23,7 +23,7 @@ ${DESTDIR}/etc/keyboard-color.json: csharp/keyboards/settings.release.json
 	mkdir -p ${DESTDIR}/etc
 	cp csharp/keyboards/settings.release.json ${DESTDIR}/etc/keyboard-color.json
 
-package.deb: deb/usr/local/bin/keyboard-color deb/etc/systemd/system/keyboard-colors.service deb/etc/keyboard-color.json deb/DEBIAN/control
+package.deb: deb/usr/loca/bin/keyboard-color deb/etc/systemd/system/keyboard-colors.service deb/etc/keyboard-color.json deb/DEBIAN/control
 	./version
 	dpkg --build deb package.deb
 
@@ -37,5 +37,5 @@ version: csharp/version/*.cs csharp/version/version.csproj
 	cd csharp/version && dotnet publish -r linux-x64 -c Release -o version
 	mv csharp/version/version/version version
 
-install: ${DESTDIR}/usr/local/bin/keyboard-color ${DESTDIR}/etc/systemd/system/keyboard-colors.service ${DESTDIR}/etc/keyboard-color.json debian/control debian/changelog debian/rules
+install: ${DESTDIR}/bin/keyboard-color ${DESTDIR}/etc/systemd/system/keyboard-colors.service ${DESTDIR}/etc/keyboard-color.json debian/control debian/changelog debian/rules
 	
