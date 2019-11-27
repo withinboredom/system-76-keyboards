@@ -113,9 +113,6 @@ namespace keyboards
                     (SolidOptions o) => RunOrInstall(args, o,
                         new SolidColor(container, o.Color != null ? Rgb.FromHex(o.Color) : Rgb.Empty)
                             {Frequency = FromFps(o.Frequency), Filters = GetFilters(o, container)}),
-                    (NewRainbowOptions o) => RunOrInstall(args, o,
-                        new NewRainbow(container)
-                            {Frequency = FromFps(o.Frequency), Filters = GetFilters(o, container)}),
                     (StopOptions o) =>
                     {
                         Process.Start("systemctl", "stop keyboard-colors.service")?.WaitForExit();
@@ -147,7 +144,7 @@ namespace keyboards
             public bool NoPower { get; set; }
         }
 
-        [Verb("oldrainbow", HelpText = "Turn on the rainbow!")]
+        [Verb("rainbow", HelpText = "Turn on the rainbow!")]
         internal class RainbowOptions : Options
         {
         }
@@ -166,11 +163,6 @@ namespace keyboards
 
         [Verb("stop", HelpText = "Stop the currently running service")]
         internal class StopOptions : Options
-        {
-        }
-
-        [Verb("rainbow", HelpText = "Start the rainbow")]
-        internal class NewRainbowOptions : Options
         {
         }
     }
