@@ -16,10 +16,6 @@ namespace version
             var newLines = keyboards.Select(line => line.Replace("_version_", version)).ToList();
 
             File.WriteAllLines("csharp/keyboards/keyboards.csproj", newLines);
-            
-            // update deb version
-            var deb = File.ReadAllText("deb/DEBIAN/control");
-            File.WriteAllText("deb/DEBIAN/control", deb.Replace("_version_", version));
         }
     }
 }
