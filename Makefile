@@ -35,6 +35,7 @@ clean:
 	cd csharp/keyboards && dotnet clean
 	cd csharp/version && dotnet clean
 	rm -rf ${SERVICE} deb/etc deb/usr release version package.deb
+	git clean -fd
 
 version: csharp/version/*.cs csharp/version/version.csproj
 	cd csharp/version && dotnet publish -r linux-x64 -c Release -o version
