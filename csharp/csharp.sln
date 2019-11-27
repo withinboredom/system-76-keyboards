@@ -22,6 +22,8 @@ ProjectSection(SolutionItems) = preProject
 	..\debian\rules = ..\debian\rules
 EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColorPicker", "ColorPicker\ColorPicker.csproj", "{128C3F63-D332-426A-93F0-3DDBC7AB5F0B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,6 +38,10 @@ Global
 		{6E7A6890-8B4F-435A-AF24-2C9698425097}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E7A6890-8B4F-435A-AF24-2C9698425097}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E7A6890-8B4F-435A-AF24-2C9698425097}.Release|Any CPU.Build.0 = Release|Any CPU
+		{128C3F63-D332-426A-93F0-3DDBC7AB5F0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{128C3F63-D332-426A-93F0-3DDBC7AB5F0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{128C3F63-D332-426A-93F0-3DDBC7AB5F0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{128C3F63-D332-426A-93F0-3DDBC7AB5F0B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{47D800E0-CE45-4A54-A05D-D3A1B6B3D3A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{47D800E0-CE45-4A54-A05D-D3A1B6B3D3A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{47D800E0-CE45-4A54-A05D-D3A1B6B3D3A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
