@@ -3,7 +3,7 @@
     "Filters": [
     ],
     "DimOnSleep": true,
-    "Mode": "SolidColor",
+    "Mode": "Monitor",
     "FPS": 10,
     "Options": {
         "SolidColor": {
