@@ -8,7 +8,10 @@ ${SERVICE}: csharp/keyboards/*.cs csharp/keyboards/*/*.cs csharp/keyboards/keybo
 
 release: csharp/keyboards/*.cs csharp/keyboards/*/*.cs csharp/keyboards/keyboards.csproj version
 	@test -z "$(shell git diff-index --name-only HEAD --)" || exit 2
-	echo "hello world"
+	./version
+	${MAKE} ${SERVICE}
+	mv ${SERVICE} release
+	git reset HEAD --hard
 
 deb/usr/local/bin/keyboard-color: ${SERVICE}
 	mkdir -p deb/usr/local/bin
