@@ -8,6 +8,7 @@ using keyboards.ColorSpace;
 using keyboards.Filters;
 using keyboards.Keyboards;
 using keyboards.Monitors;
+using Microsoft.Extensions.Configuration;
 using Monitor = keyboards.Keyboards.Monitor;
 
 namespace keyboards
@@ -81,6 +82,12 @@ namespace keyboards
 
         private static int Main(string[] args)
         {
+            var configBuilder = new ConfigurationBuilder()
+                .AddEnvironmentVariables()
+                .AddJsonFile("appsettings.json");
+
+            var configuration = configBuilder.Build();
+
             var source = new CancellationTokenSource();
             _token = source.Token;
             Console.CancelKeyPress += (sender, eventArgs) =>
