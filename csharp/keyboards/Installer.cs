@@ -94,13 +94,6 @@ WantedBy=multi-user.target
                                   "evaluate for yourself. To give root permission to your screen until you logout:");
                 Console.WriteLine("   xhost +SI:localuser:root");
                 Console.WriteLine("You can add it to your ~/.profile if you'd like to make it permanent.");
-                Console.WriteLine(
-                    "I've detected that root doesn't have permanent access to your x-session. If you would like to\n" +
-                    "turn off the keyboard backlights when the screen is off, you'll need to give root\n" +
-                    "permission to access it. This might have security implications that you'll need to\n" +
-                    "evaluate for yourself. To give root permission to your screen until you logout:");
-                Console.WriteLine("   xhost +SI:localuser:root");
-                Console.WriteLine("Add it to your ~/.profile to make it permanent.");
             }
             else if (!IsInProfile())
             {
