@@ -104,7 +104,7 @@ namespace keyboards
             var container = new ControlContainer();
 
             return Parser.Default
-                .ParseArguments<RainbowOptions, SolidOptions, MonitorOptions, NewRainbowOptions, StopOptions>(args)
+                .ParseArguments<RainbowOptions, SolidOptions, MonitorOptions, StopOptions>(args)
                 .MapResult(
                     (MonitorOptions o) => RunOrInstall(args, o,
                         new Monitor(container) {Frequency = FromFps(o.Frequency), Filters = GetFilters(o, container)}),
