@@ -29,6 +29,7 @@ package.deb: deb/usr/local/bin/keyboard-color deb/etc/systemd/system/keyboard-co
 	@test -z "$(shell git diff-index --name-only HEAD --)" || exit 2
 	./version
 	dpkg --build deb package.deb
+	git reset HEAD --hard
 
 clean:
 	cd csharp/keyboards && dotnet clean
