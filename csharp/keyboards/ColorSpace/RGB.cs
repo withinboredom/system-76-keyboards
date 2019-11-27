@@ -168,6 +168,10 @@ namespace keyboards.ColorSpace
         /// <returns></returns>
         public static Rgb FromHex(string hex)
         {
+            if (hex.StartsWith("#"))
+            {
+                hex = hex.Substring(1);
+            }
             var red = HexToByte(hex.Substring(0, 2));
             var gre = HexToByte(hex.Substring(2, 2));
             var blu = HexToByte(hex.Substring(4, 2));

@@ -1,0 +1,41 @@
+{
+    "Logging": "Debug",
+    "Filters": [],
+    "DimOnSleep": true,
+    "Mode": "SolidColor",
+    "FPS": 10,
+    "Options": {
+        "SolidColor": {
+            "Colors": {
+                "Left": "#ABABAB",
+                "Center": "#ABABAB",
+                "Right": "#ABABAB"
+            }
+        },
+        "Rainbow": {
+            "RedPhase": 0.0003,
+            "GreenPhase": 0.001,
+            "BluePhase": 0.0007
+        },
+        "Monitor": {
+            "Cpu": {
+                "Red": 95,
+                "Yellow": 75,
+                "Green": 50,
+                "Position": "Left"
+            },
+            "Memory": {
+                "Red": 80,
+                "Yellow": 45,
+                "Green": 15,
+                "Position": "Center" 
+            },
+            "Hdd": {
+                "Red": 90,
+                "Yellow": 45,
+                "Green": 30,
+                "Position": "Right"
+            }
+        }
+    }
+}

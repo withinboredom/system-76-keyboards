@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using keyboards.ColorSpace;
 
 namespace keyboards.Sides
@@ -7,6 +8,11 @@ namespace keyboards.Sides
         public Solid(Rgb color)
         {
             CurrentColor = color;
+        }
+
+        public new Task Load()
+        {
+            return Task.CompletedTask;
         }
     }
 }

@@ -41,6 +41,17 @@
 
     <ItemGroup>
       <PackageReference Include="CommandLineParser" Version="2.6.0" />
+      <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.0.1" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.0.1" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.0.1" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="settings.json" />
+      <Content Include="settings.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
 
 </Project>
