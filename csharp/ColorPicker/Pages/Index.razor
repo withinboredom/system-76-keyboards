@@ -1,0 +1,66 @@
+﻿@page "/"
+@using keyboards
+@using keyboards.ColorSpace
+@using keyboards.Filters
+@functions
+{
+    IFile _left
+    {
+        get
+        {
+            var l = LedProvider.GetLedFor(new ControlContainer(), LedProvider.Location.Left);
+            if (l.Exists) return l;
+            var s = LedProvider.GetLedFor(new ControlContainer(), LedProvider.Location.Single);
+            if (s.Exists) return s;
+            return null;
+        }
+    }
+
+    IFile _center
+    {
+        get
+        {
+            var c = LedProvider.GetLedFor(new ControlContainer(), LedProvider.Location.Center);
+            return c;
+        }
+    }
+
+    IFile _right
+    {
+        get { return LedProvider.GetLedFor(new ControlContainer(), LedProvider.Location.Right); }
+    }
+
+    private void SetColor(string color)
+    {
+        var sidel = new keyboards.Sides.Solid(keyboards.ColorSpace.Rgb.FromHex(color))
+        {
+            Led = _left
+        };
+        var sidec = new Solid(Rgb.FromHex(color)) {Led = _center};
+        var sider = new Solid(Rgb.FromHex(color))
+        {
+            Led = _right
+        };
+        sidel.Commit(new List<IFilter>());
+        sidec.Commit(new List<IFilter>());
+        sider.Commit(new List<IFilter>());
+    }
+    
+    private string _leftColor = "#FFFFAA";
+    protected string LeftColor
+    {
+        get => _leftColor;
+        set
+        {
+            Console.WriteLine($"Setting color to {value}");
+            SetColor(value);
+            _leftColor = value;
+        }
+    }
+}
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+<input type="color" @bind="LeftColor" @oninput="@((c) => LeftColor = c.Value.ToString())" />
