@@ -10,6 +10,7 @@ namespace keyboards.Sides
             CurrentColor = color;
         }
 
+        // ReSharper disable once UnusedMember.Global
         public new Task Load()
         {
             return Task.CompletedTask;
