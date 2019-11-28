@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using CommandLine;
-using keyboards.ColorSpace;
 using keyboards.Filters;
 using keyboards.Keyboards;
 using keyboards.Monitors;
@@ -23,15 +22,12 @@ namespace keyboards
             var arr = new List<IFilter>();
 
             if (dim && Installer.RootHasPermission())
-            {
                 arr.Add(new PowerFilter(container, Display.Instance(container)));
-            } else if (dim && !Installer.RootHasPermission())
-            {
-                Console.Error.WriteLine("Root doesn't have permission to see your DPMS state, to give it permission run as your user: xhost si:localuser:root");
-            }
+            else if (dim && !Installer.RootHasPermission())
+                Console.Error.WriteLine(
+                    "Root doesn't have permission to see your DPMS state, to give it permission run as your user: xhost si:localuser:root");
 
             foreach (var setting in configuration.GetChildren())
-            {
                 switch (setting.Value)
                 {
                     case "WashedOut":
@@ -41,11 +37,11 @@ namespace keyboards
                         arr.Add(new BlackWhite());
                         break;
                     default:
-                        ParseError("Filters", "Filter contains an invalid filter. Please check your spelling and try again.");
+                        ParseError("Filters",
+                            "Filter contains an invalid filter. Please check your spelling and try again.");
                         break;
                 }
-            }
-            
+
             return arr.ToArray();
         }
 
@@ -55,23 +51,19 @@ namespace keyboards
             Environment.Exit(1);
             return true;
         }
-        
+
         private static Keyboard GetKeyboard(IControlContainer container, IConfiguration configuration)
         {
             var options = configuration.GetSection("Options");
             if (!double.TryParse(configuration.GetSection("FPS").Value, out var fps))
-            {
                 ParseError("FPS", "FPS must be a number");
-            }
 
             if (!bool.TryParse(configuration.GetSection("DimOnSleep").Value, out var dim))
-            {
                 ParseError("DimOnSleep", "DimOnSleep must be a boolean");
-            }
 
             var filters = GetFilters(configuration.GetSection("Filters"), dim, container);
             Keyboard keyboard = null;
-            
+
             switch (configuration.GetSection("Mode").Value)
             {
                 case "SolidColor":
@@ -92,7 +84,7 @@ namespace keyboards
             keyboard.Frequency = FromFps(fps);
 
             return keyboard;
-        } 
+        }
 
         private static int RunOrInstall(string[] args, Options options)
         {
@@ -105,12 +97,11 @@ namespace keyboards
 
             if (!PidFile.HasPermission)
             {
-                    Console.WriteLine("You need to run this as root!");
-                    Environment.Exit(1);
+                Console.WriteLine("You need to run this as root!");
+                Environment.Exit(1);
             }
 
             if (PidFile.Exists)
-            {
                 try
                 {
                     var process = Process.GetProcessById(int.Parse(PidFile.Contents));
@@ -122,11 +113,10 @@ namespace keyboards
                     }
                 }
                 catch (ArgumentException)
-                { 
+                {
                     // not running
                 }
-            }
-            
+
             Installer.Install();
 
             PidFile.Commit(Process.GetCurrentProcess().Id.ToString()).Wait();
@@ -187,9 +177,11 @@ namespace keyboards
                 HelpText = "Set the configuration file to load")]
             public string configFileName { get; set; }
         }
-        
+
         [Verb("run", HelpText = "Run the keyboard colors service")]
-        internal class RunOptions: Options {}
+        internal class RunOptions : Options
+        {
+        }
 
         [Verb("stop", HelpText = "Stop the currently running service")]
         internal class StopOptions : Options

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
 using keyboards.Monitors;
 using keyboards.Sides;
@@ -10,61 +9,18 @@ namespace keyboards.Keyboards
 {
     public class Monitor : Keyboard
     {
-        private class MonitorConfiguration
-        {
-            public Breakpoints Cpu { get; set; } = new Breakpoints
-            {
-                Red = 95,
-                Yellow = 75,
-                Green = 50,
-                Position = Position.LeftOrSingle,
-                Name = Name.Cpu
-            };
-
-            public Breakpoints Memory { get; set; } = new Breakpoints
-            {
-                Red = 85,
-                Yellow = 45,
-                Green = 15,
-                Position = Position.Center,
-                Name = Name.Memory
-            };
-
-            public Breakpoints Hdd { get; set; } = new Breakpoints
-            {
-                Red = 90,
-                Yellow = 45,
-                Green = 30,
-                Position = Position.Right,
-                Name = Name.Disk
-            };
-        }
-
-        private class Breakpoints
-        {
-            public double Red { get; set; }
-            public double Yellow { get; set; }
-            public double Green { get; set; }
-            public Position Position { get; set; }
-            
-            public Name Name { get; set; }
-        }
-        
-        private enum Position
-        {
-            LeftOrSingle,
-            Center,
-            Right,
-        }
-
-        private enum Name
-        {
-            Cpu,
-            Memory,
-            Disk
-        }
-        
         private readonly MonitorConfiguration _monitorConfiguration = new MonitorConfiguration();
+
+        public Monitor(IControlContainer container, IConfiguration configuration) : base(container)
+        {
+            _monitorConfiguration = configuration.GetSection("Monitor").Get<MonitorConfiguration>();
+            Init(container);
+        }
+
+        public Monitor(IControlContainer container) : base(container)
+        {
+            Init(container);
+        }
 
         private IMonitor MonitorFromBreakpoint(IControlContainer container, Breakpoints p)
         {
@@ -84,13 +40,15 @@ namespace keyboards.Keyboards
 
         private void Init(IControlContainer container)
         {
-            var breakpoints = new List<Breakpoints> {_monitorConfiguration.Cpu, _monitorConfiguration.Hdd, _monitorConfiguration.Memory};
+            var breakpoints = new List<Breakpoints>
+                {_monitorConfiguration.Cpu, _monitorConfiguration.Hdd, _monitorConfiguration.Memory};
 
             var left = breakpoints.FirstOrDefault(x => x.Position == Position.LeftOrSingle);
             var center = breakpoints.FirstOrDefault(x => x.Position == Position.Center);
             var right = breakpoints.FirstOrDefault(x => x.Position == Position.Right);
 
-            if(left == default(Breakpoints) || center == default(Breakpoints) || right == default(Breakpoints)) throw new Exception("All sides must be specified even if they aren't used");
+            if (left == default(Breakpoints) || center == default(Breakpoints) || right == default(Breakpoints))
+                throw new Exception("All sides must be specified even if they aren't used");
 
             Sides = new[]
             {
@@ -99,16 +57,59 @@ namespace keyboards.Keyboards
                 SideFromBreakpoint(container, right)
             };
         }
-        
-        public Monitor(IControlContainer container, IConfiguration configuration) : base(container)
+
+        private class MonitorConfiguration
         {
-            _monitorConfiguration = configuration.GetSection("Monitor").Get<MonitorConfiguration>();
-            Init(container);
+            public Breakpoints Cpu { get; } = new Breakpoints
+            {
+                Red = 95,
+                Yellow = 75,
+                Green = 50,
+                Position = Position.LeftOrSingle,
+                Name = Name.Cpu
+            };
+
+            public Breakpoints Memory { get; } = new Breakpoints
+            {
+                Red = 85,
+                Yellow = 45,
+                Green = 15,
+                Position = Position.Center,
+                Name = Name.Memory
+            };
+
+            public Breakpoints Hdd { get; } = new Breakpoints
+            {
+                Red = 90,
+                Yellow = 45,
+                Green = 30,
+                Position = Position.Right,
+                Name = Name.Disk
+            };
         }
-        
-        public Monitor(IControlContainer container) : base(container)
+
+        private class Breakpoints
         {
-            Init(container);
+            public double Red { get; set; }
+            public double Yellow { get; set; }
+            public double Green { get; set; }
+            public Position Position { get; set; }
+
+            public Name Name { get; set; }
+        }
+
+        private enum Position
+        {
+            LeftOrSingle,
+            Center,
+            Right
+        }
+
+        private enum Name
+        {
+            Cpu,
+            Memory,
+            Disk
         }
     }
 }
