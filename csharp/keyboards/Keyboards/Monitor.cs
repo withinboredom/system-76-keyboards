@@ -13,7 +13,7 @@ namespace keyboards.Keyboards
 
         public Monitor(IControlContainer container, IConfiguration configuration) : base(container)
         {
-            _monitorConfiguration = configuration.GetSection("Monitor").Get<MonitorConfiguration>();
+            _monitorConfiguration = configuration == null ? new MonitorConfiguration() : configuration.GetSection("Monitor").Get<MonitorConfiguration>();
             Init(container);
         }
 
@@ -52,8 +52,7 @@ namespace keyboards.Keyboards
                 SideFromBreakpoint(container, right)
             };
         }
-
-        // ReSharper disable once ClassNeverInstantiated.Local
+        
         private class MonitorConfiguration
         {
             public Breakpoints Cpu { get; } = new Breakpoints
