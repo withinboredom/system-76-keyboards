@@ -126,13 +126,8 @@ namespace keyboards
                     // not running
                 }
             }
-
-            /*if (options.Install)
-            {
-                Installer.CreateParametersFromOptions(args);
-                Installer.Install();
-                return 0;
-            }*/
+            
+            Installer.Install();
 
             PidFile.Commit(Process.GetCurrentProcess().Id.ToString()).Wait();
 
