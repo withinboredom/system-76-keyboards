@@ -3,6 +3,6 @@
 %:  
 	dh $@ --with=systemd
 
-override_dh_shlibdeps:
+#override_dh_shlibdeps:
 
 override_dh_strip:

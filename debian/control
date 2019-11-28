@@ -8,6 +8,6 @@ Section: utils
 Package: s76-keyboard-colors
 Priority: optional  
 Architecture: any-amd64
-Depends: ${shlibs:Depends}, ${misc:Depends}, libx11-6  
+Depends: ${shlibs:Depends}, ${misc:Depends}  
 Description: Beautiful colors for system76 keyboards
  Makes the world a better place

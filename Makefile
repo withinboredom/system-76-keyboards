@@ -31,8 +31,10 @@ ${COPYRIGHT}: LICENSE
 	mkdir -p ${shell dirname ${COPYRIGHT}}
 	cp LICENSE ${COPYRIGHT}
 
-package.deb:
+../s76-keyboard-colors_1.0_amd64.deb: csharp/keyboards/*.cs csharp/keyboards/*/*.cs csharp/keyboards/keyboards.csproj debian/* csharp/keyboards/settings.release.json keyboard-colors.service
 	debuild -b -us -uc
+
+package.deb: ../s76-keyboard-colors_1.0_amd64.deb
 	cp ../s76-keyboard-colors_1.0_amd64.deb package.deb
 
 clean:
