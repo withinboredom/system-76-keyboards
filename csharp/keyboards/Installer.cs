@@ -1,7 +1,7 @@
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace keyboards
 {
@@ -46,17 +46,21 @@ WantedBy=multi-user.target
                 Console.WriteLine("Please delete /opt/keyboard-colors/keyboard-color.php as it's no longer needed.");
         }
 
+        [DllImport("libX11")]
+        private static extern IntPtr XOpenDisplay(string displayName);
+
+        [DllImport("libX11")]
+        private static extern void XCloseDisplay(IntPtr display);
+
         internal static bool RootHasPermission()
         {
-            var process = Process.Start(new ProcessStartInfo("xhost") {RedirectStandardOutput = true});
+            var hasAccess = true;
+            var display = XOpenDisplay(":0");
+            if (display == IntPtr.Zero) hasAccess = false;
 
-            if (process == null) return false;
+            XCloseDisplay(display);
 
-            if (!process.WaitForExit((int) TimeSpan.FromSeconds(10).TotalMilliseconds))
-                return false;
-
-            var result = process.StandardOutput.ReadToEnd();
-            return result.Contains("SI:localuser:root");
+            return hasAccess;
         }
 
         private static bool IsInProfile()
