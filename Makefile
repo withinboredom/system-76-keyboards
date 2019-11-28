@@ -4,7 +4,7 @@ SERVICE = keyboard-color
 BIN = ${DESTDIR}/usr/bin/keyboard-color
 UNIT = ${DESTDIR}/lib/systemd/system/keyboard-colors.service
 CONFIG = ${DESTDIR}/etc/keyboard-color.json
-COPYRIGHT = 
+COPYRIGHT = ${DESTDIR}/usr/share/doc/s76-keyboard-colors/copyright
 
 release: csharp/keyboards/*.cs csharp/keyboards/*/*.cs csharp/keyboards/keyboards.csproj version
 	./version
