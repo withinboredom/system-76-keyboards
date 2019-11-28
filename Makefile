@@ -1,7 +1,7 @@
 .PHONY: clean
 
 SERVICE = keyboard-color
-BIN = ${DESTDIR}/bin/keyboard-color
+BIN = ${DESTDIR}/usr/bin/keyboard-color
 UNIT = ${DESTDIR}/lib/systemd/system/keyboard-colors.service
 CONFIG = ${DESTDIR}/etc/keyboard-color.json
 COPYRIGHT = 
@@ -31,9 +31,9 @@ ${COPYRIGHT}: LICENSE
 	mkdir -p ${shell dirname ${COPYRIGHT}}
 	cp LICENSE ${COPYRIGHT}
 
-package.deb: deb/usr/loca/bin/keyboard-color deb/etc/systemd/system/keyboard-colors.service deb/etc/keyboard-color.json deb/DEBIAN/control
-	./version
-	dpkg --build deb package.deb
+package.deb:
+	debuild -b -us -uc
+	cp ../s76-keyboard-colors_1.0_amd64.deb package.deb
 
 clean:
 	cd csharp/keyboards && dotnet clean
