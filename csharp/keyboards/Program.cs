@@ -4,46 +4,97 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using CommandLine;
-using keyboards.ColorSpace;
 using keyboards.Filters;
 using keyboards.Keyboards;
 using keyboards.Monitors;
+using Microsoft.Extensions.Configuration;
 using Monitor = keyboards.Keyboards.Monitor;
 
 namespace keyboards
 {
+    // ReSharper disable once ClassNeverInstantiated.Global
     internal class Program
     {
         private static readonly IFile PidFile = new SpecialFile("/run/keyboard-colors.pid");
         private static CancellationToken _token;
 
-        private static IFilter[] GetFilters(Options options, IControlContainer container)
+        private static IFilter[] GetFilters(IConfiguration configuration, bool dim, IControlContainer container)
         {
             var arr = new List<IFilter>();
 
-            if (!options.NoPower && Installer.RootHasPermission())
+            if (dim && Installer.RootHasPermission())
                 arr.Add(new PowerFilter(container, Display.Instance(container)));
-            else if (!options.NoPower && !Installer.RootHasPermission())
-                Console.WriteLine(
+            else if (dim && !Installer.RootHasPermission())
+                Console.Error.WriteLine(
                     "Root doesn't have permission to see your DPMS state, to give it permission run as your user: xhost si:localuser:root");
 
-            if (options.Filter == null) return arr.ToArray();
-            foreach (var filter in options.Filter)
-                switch (filter)
+            foreach (var setting in configuration.GetChildren())
+                switch (setting.Value)
                 {
-                    case Options.Filters.WashedOut:
+                    case "WashedOut":
                         arr.Add(new WashedOut());
                         break;
-                    case Options.Filters.BlackWhite:
+                    case "BlackWhite":
                         arr.Add(new BlackWhite());
+                        break;
+                    default:
+                        ParseError("Filters",
+                            "Filter contains an invalid filter. Please check your spelling and try again.");
                         break;
                 }
 
             return arr.ToArray();
         }
 
-        private static int RunOrInstall(string[] args, Options options, Keyboard kb)
+        private static void ParseError(string key, string reason)
         {
+            Console.Error.WriteLine($"Unable to parse {key}: {reason}");
+            Environment.Exit(1);
+        }
+
+        private static Keyboard GetKeyboard(IControlContainer container, IConfiguration configuration)
+        {
+            var options = configuration.GetSection("Options");
+            if (!double.TryParse(configuration.GetSection("FPS").Value, out var fps))
+                ParseError("FPS", "FPS must be a number");
+
+            if (!bool.TryParse(configuration.GetSection("DimOnSleep").Value, out var dim))
+                ParseError("DimOnSleep", "DimOnSleep must be a boolean");
+
+            var filters = GetFilters(configuration.GetSection("Filters"), dim, container);
+            Keyboard keyboard;
+
+            switch (configuration.GetSection("Mode").Value)
+            {
+                case "SolidColor":
+                    keyboard = new SolidColor(container, options);
+                    break;
+                case "Rainbow":
+                    keyboard = new Rainbow(container, options);
+                    break;
+                case "Monitor":
+                    keyboard = new Monitor(container, options);
+                    break;
+                default:
+                    ParseError("Mode", $"{configuration.GetSection("Mode")} is not a valid mode.");
+                    return null;
+            }
+
+            keyboard.Filters = filters;
+            keyboard.Frequency = FromFps(fps);
+
+            return keyboard;
+        }
+
+        private static int RunOrInstall(Options options)
+        {
+            var configuration = new ConfigurationBuilder()
+                .AddEnvironmentVariables()
+                .AddJsonFile(options.configFileName)
+                .Build();
+
+            var kb = GetKeyboard(new ControlContainer(), configuration);
+
             if (!PidFile.HasPermission)
             {
                 Console.WriteLine("You need to run this as root!");
@@ -51,24 +102,28 @@ namespace keyboards
             }
 
             if (PidFile.Exists)
-            {
-                Console.WriteLine(
-                    "The service is already running, did you mean to start it again? Hint: `keyboard-color stop`");
-                Environment.Exit(1);
-            }
+                try
+                {
+                    var process = Process.GetProcessById(int.Parse(PidFile.Contents));
+                    if (!process.HasExited)
+                    {
+                        Console.WriteLine(
+                            "The service is already running, did you mean to start it again? Hint: `keyboard-color stop`");
+                        Environment.Exit(1);
+                    }
+                }
+                catch (ArgumentException)
+                {
+                    // not running
+                }
 
-            if (options.Install)
-            {
-                Installer.CreateParametersFromOptions(args);
-                Installer.Install();
-                return 0;
-            }
+            Installer.Install();
 
             PidFile.Commit(Process.GetCurrentProcess().Id.ToString()).Wait();
 
             try
             {
-                Task.WaitAll(new[] {kb.Run(_token)}, _token);
+                Task.WaitAll(new Task[] {kb.Run(_token)}, _token);
                 return 0;
             }
             catch (OperationCanceledException)
@@ -101,18 +156,10 @@ namespace keyboards
                     PidFile.Delete();
             };
 
-            var container = new ControlContainer();
-
             return Parser.Default
-                .ParseArguments<RainbowOptions, SolidOptions, MonitorOptions, StopOptions>(args)
+                .ParseArguments<RunOptions, StopOptions>(args)
                 .MapResult(
-                    (MonitorOptions o) => RunOrInstall(args, o,
-                        new Monitor(container) {Frequency = FromFps(o.Frequency), Filters = GetFilters(o, container)}),
-                    (RainbowOptions o) => RunOrInstall(args, o,
-                        new Rainbow(container) {Frequency = FromFps(o.Frequency), Filters = GetFilters(o, container)}),
-                    (SolidOptions o) => RunOrInstall(args, o,
-                        new SolidColor(container, o.Color != null ? Rgb.FromHex(o.Color) : Rgb.Empty)
-                            {Frequency = FromFps(o.Frequency), Filters = GetFilters(o, container)}),
+                    (RunOptions o) => RunOrInstall(o),
                     (StopOptions o) =>
                     {
                         Process.Start("systemctl", "stop keyboard-colors.service")?.WaitForExit();
@@ -122,47 +169,22 @@ namespace keyboards
                 );
         }
 
-        internal class Options
+        private class Options
         {
-            public enum Filters
-            {
-                WashedOut,
-                BlackWhite
-            }
-
-            [Option('f', "filter", Required = false, HelpText = "Specify a filter to use", Separator = ',')]
-            public IEnumerable<Filters>? Filter { get; set; }
-
-            [Option('F', "fps", Required = false, Default = 10,
-                HelpText = "Determine the delay between frames")]
-            public double Frequency { get; set; }
-
-            [Option('i', "install", Required = false, HelpText = "Install the active command")]
-            public bool Install { get; set; }
-
-            [Option('p', "noPower", Required = false, HelpText = "Disable fade out when the screen turns off")]
-            public bool NoPower { get; set; }
+            [Option('c', "config", Default = "/etc/keyboard-colors.json",
+                HelpText = "Set the configuration file to load")]
+            public string configFileName { get; set; }
         }
 
-        [Verb("rainbow", HelpText = "Turn on the rainbow!")]
-        internal class RainbowOptions : Options
-        {
-        }
-
-        [Verb("solidcolor", HelpText = "Keep it simple")]
-        internal class SolidOptions : Options
-        {
-            [Option('c', "color", Default = "FFFFFF", HelpText = "Specify the color to become")]
-            public string? Color { get; set; }
-        }
-
-        [Verb("monitor", HelpText = "Keep an eye on the machine")]
-        internal class MonitorOptions : Options
+        [Verb("run", HelpText = "Run the keyboard colors service")]
+        // ReSharper disable once ClassNeverInstantiated.Local
+        private class RunOptions : Options
         {
         }
 
         [Verb("stop", HelpText = "Stop the currently running service")]
-        internal class StopOptions : Options
+        // ReSharper disable once ClassNeverInstantiated.Local
+        private class StopOptions : Options
         {
         }
     }

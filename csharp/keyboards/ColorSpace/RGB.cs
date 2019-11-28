@@ -83,7 +83,7 @@ namespace keyboards.ColorSpace
         /// <param name="other">The color to convert</param>
         public Rgb(Hsb other)
         {
-            double r = 0, b = 0, g = 0;
+            double r, b, g;
 
             if (other.Brightness < 0)
             {
@@ -168,6 +168,7 @@ namespace keyboards.ColorSpace
         /// <returns></returns>
         public static Rgb FromHex(string hex)
         {
+            if (hex.StartsWith("#")) hex = hex.Substring(1);
             var red = HexToByte(hex.Substring(0, 2));
             var gre = HexToByte(hex.Substring(2, 2));
             var blu = HexToByte(hex.Substring(4, 2));

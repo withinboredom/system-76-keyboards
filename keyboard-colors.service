@@ -1,7 +1,8 @@
 [Unit]
 Description=System76 Keyboard Colors
 [Service]
-Type=Simple
-ExecStart=/usr/bin/php /opt/keyboard-colors/keyboard-color.php --frequency .5 --mode MODE # update every 2 seconds
+Type=simple
+ExecStart=/usr/bin/keyboard-color run -c /etc/keyboard-color.json
+PIDFile=/run/keyboard-colors.pid
 [Install]
 WantedBy=multi-user.target

@@ -1,62 +1,25 @@
 using System;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace keyboards
 {
     public static class Installer
     {
-        private static string? Parameters { get; set; }
+        [DllImport("libX11")]
+        private static extern IntPtr XOpenDisplay(string displayName);
 
-        private static string SystemD =>
-            $@"
-[Unit]
-Description=System76 Keyboard Colors
-[Service]
-Type=Simple
-ExecStart=/usr/local/bin/keyboard-color {Parameters}
-PIDFile=keyboard-colors.pid
-[Install]
-WantedBy=multi-user.target
-";
-
-        internal static void CreateParametersFromOptions(string[] options)
-        {
-            Parameters = string.Join(' ', options.Where(s => !s.Contains("--install") || !s.Contains("-i")).ToArray());
-        }
-
-        private static void PutMeInRightSpot()
-        {
-            var path = Environment.CurrentDirectory + "/keyboard-color";
-
-            if (!File.Exists(path) && File.Exists("/usr/local/bin/keyboard-color"))
-                return;
-
-            if (!File.Exists(path))
-            {
-                Console.WriteLine("Unable to locate `keyboard-color` in the current directory.");
-                Environment.Exit(1);
-            }
-
-            Console.WriteLine($"Copying {path} to /usr/local/bin");
-            File.Copy(path, "/usr/local/bin/keyboard-color", true);
-
-            if (File.Exists("/opt/keyboard-colors/keyboard-color.php"))
-                Console.WriteLine("Please delete /opt/keyboard-colors/keyboard-color.php as it's no longer needed.");
-        }
+        [DllImport("libX11")]
+        private static extern void XCloseDisplay(IntPtr display);
 
         internal static bool RootHasPermission()
         {
-            var process = Process.Start(new ProcessStartInfo("xhost") {RedirectStandardOutput = true});
+            var hasAccess = true;
+            var display = XOpenDisplay(":0");
+            if (display == IntPtr.Zero) hasAccess = false;
 
-            if (process == null) return false;
+            XCloseDisplay(display);
 
-            if (!process.WaitForExit((int) TimeSpan.FromSeconds(10).TotalMilliseconds))
-                return false;
-
-            var result = process.StandardOutput.ReadToEnd();
-            return result.Contains("SI:localuser:root");
+            return hasAccess;
         }
 
         private static bool IsInProfile()
@@ -67,26 +30,8 @@ WantedBy=multi-user.target
             return contents.Contains("SI:localuser:root");
         }
 
-        private static void CreateService()
-        {
-            var servicePath = "/etc/systemd/system/keyboard-colors.service";
-            File.WriteAllText(servicePath, SystemD);
-        }
-
         internal static void Install()
         {
-            Console.WriteLine("Copying `keyboard-color` to /usr/local/bin");
-            PutMeInRightSpot();
-
-            Console.WriteLine("Creating service file in /etc/systemd/system/keyboard-colors.service");
-            CreateService();
-
-            Console.WriteLine("If you want to start this on boot run:");
-            Console.WriteLine("   sudo systemctl enable keyboard-colors");
-
-            Console.WriteLine("If you want to start the service right now, run:");
-            Console.WriteLine("   sudo systemctl start keyboard-colors\n");
-
             if (!RootHasPermission())
             {
                 Console.WriteLine(

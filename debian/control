@@ -1,0 +1,13 @@
+Source: s76-keyboard-colors
+Maintainer: Robert Landers <landers.robert@gmail.com>
+Build-Depends: debhelper (>= 10), dh-systemd
+Standards-Version: 4.1.4
+Vcs-git: git://github.com:withinboredom/system-76-keyboards.git
+Section: utils
+
+Package: s76-keyboard-colors
+Priority: optional  
+Architecture: any-amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}  
+Description: Beautiful colors for system76 keyboards
+ Makes the world a better place

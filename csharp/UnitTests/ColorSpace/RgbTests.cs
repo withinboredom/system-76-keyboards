@@ -39,9 +39,17 @@ namespace UnitTests.ColorSpace
         }
 
         [Test]
+        public void CanHandleNegativeHsb()
+        {
+            var color = new Hsb(0, -10, -10);
+            var expected = Rgb.Empty;
+            Assert.AreEqual(expected, new Rgb(color));
+        }
+
+        [Test]
         public void CanConvertHex()
         {
-            var color = Rgb.FromHex("FF00FF");
+            var color = Rgb.FromHex("#FF00FF");
             Assert.AreEqual(new Rgb(255, 0, 255), color);
             Assert.AreEqual("FF00FF", color.Hex);
         }

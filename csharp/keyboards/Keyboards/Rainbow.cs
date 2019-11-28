@@ -1,5 +1,6 @@
 using keyboards.Monitors;
 using keyboards.Sides;
+using Microsoft.Extensions.Configuration;
 
 namespace keyboards.Keyboards
 {
@@ -8,21 +9,34 @@ namespace keyboards.Keyboards
     /// </summary>
     public class Rainbow : Keyboard
     {
-        /// <summary>
-        ///     Construct the rainbow!
-        /// </summary>
-        public Rainbow(IControlContainer container) : base(container)
-        {
-            const double rp = 0.0003;
-            const double gp = 0.001;
-            const double bp = 0.0007;
+        private readonly RainbowConfiguration _configuration;
 
+        public Rainbow(IControlContainer container, IConfiguration options) : base(container)
+        {
+            _configuration = options.GetSection("Rainbow").Get<RainbowConfiguration>();
+            Init(container);
+        }
+
+        private void Init(IControlContainer container)
+        {
             Sides = new[]
             {
-                new RainbowSide(Time.Instance(container), rp, gp, bp, 0),
-                new RainbowSide(Time.Instance(container), rp, gp, bp, 100),
-                new RainbowSide(Time.Instance(container), rp, gp, bp, 200)
+                new RainbowSide(Time.Instance(container), _configuration.RedPhase, _configuration.GreenPhase,
+                    _configuration.BluePhase, 0),
+                new RainbowSide(Time.Instance(container), _configuration.RedPhase, _configuration.GreenPhase,
+                    _configuration.BluePhase, _configuration.Step),
+                new RainbowSide(Time.Instance(container), _configuration.RedPhase, _configuration.GreenPhase,
+                    _configuration.BluePhase, _configuration.Step * 2)
             };
+        }
+
+        // ReSharper disable once ClassNeverInstantiated.Local
+        private class RainbowConfiguration
+        {
+            public double RedPhase { get; } = 0.0003;
+            public double GreenPhase { get; } = 0.001;
+            public double BluePhase { get; } = 0.0007;
+            public long Step { get; } = 100;
         }
     }
 }
