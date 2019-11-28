@@ -1,6 +1,6 @@
 # System 76 Keyboard Color Shifter
 
-[![Coverage Status](https://coveralls.io/repos/github/withinboredom/system-76-keyboards/badge.svg?branch=fix/codecov)](https://coveralls.io/github/withinboredom/system-76-keyboards?branch=fix/codecov)
+[![Coverage Status](https://coveralls.io/repos/github/withinboredom/system-76-keyboards/badge.svg?branch=master)](https://coveralls.io/github/withinboredom/system-76-keyboards?branch=master)
 
 ![Build Status](https://github.com/withinboredom/system-76-keyboards/workflows/Builder/badge.svg)
 
