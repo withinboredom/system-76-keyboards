@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using keyboards.Filters;
 using keyboards.Sides;
-using Microsoft.Extensions.Configuration;
 
 namespace keyboards.Keyboards
 {
@@ -15,26 +14,6 @@ namespace keyboards.Keyboards
     public abstract class Keyboard
     {
         private readonly IControlContainer _container;
-
-        public interface IConfigureKeyboard
-        {
-            string BaseSection { get; set; }
-
-            void Parse(IConfiguration configuration)
-            {
-                var section = configuration.GetSection(BaseSection);
-
-                foreach (var part in section.GetChildren())
-                {
-                    var name = part.Key;
-                    var value = part.Value;
-
-                    if (value == null) break;
-                    var property = this.GetType().GetProperty(name);
-                    if (property == null) break;
-                }
-            }
-        }
 
         public Keyboard(IControlContainer container)
         {
