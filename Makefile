@@ -1,7 +1,7 @@
 .PHONY: clean
 
 SERVICE = keyboard-color
-BIN = ${DESTDIR}/usr/bin/keyboard-color
+BIN = ${DESTDIR}/bin/keyboard-color
 UNIT = ${DESTDIR}/lib/systemd/system/keyboard-colors.service
 CONFIG = ${DESTDIR}/etc/keyboard-color.json
 COPYRIGHT = 
@@ -38,6 +38,7 @@ package.deb: deb/usr/loca/bin/keyboard-color deb/etc/systemd/system/keyboard-col
 clean:
 	cd csharp/keyboards && dotnet clean
 	cd csharp/version && dotnet clean
+	cd csharp/UnitTests && dotnet clean
 	rm -rf ${SERVICE} release version package.deb
 
 version: csharp/version/*.cs csharp/version/version.csproj
@@ -45,4 +46,3 @@ version: csharp/version/*.cs csharp/version/version.csproj
 	mv csharp/version/version/version version
 
 install: debian/control debian/changelog debian/rules ${COPYRIGHT} ${CONFIG} ${UNIT} ${BIN}
-	
