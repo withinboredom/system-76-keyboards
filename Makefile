@@ -1,6 +1,10 @@
 .PHONY: clean
 
 SERVICE = keyboard-color
+BIN = ${DESTDIR}/usr/bin/keyboard-color
+UNIT = ${DESTDIR}/lib/systemd/system/keyboard-colors.service
+CONFIG = ${DESTDIR}/etc/keyboard-color.json
+COPYRIGHT = 
 
 release: csharp/keyboards/*.cs csharp/keyboards/*/*.cs csharp/keyboards/keyboards.csproj version
 	./version
@@ -11,20 +15,21 @@ ${SERVICE}: csharp/keyboards/*.cs csharp/keyboards/*/*.cs csharp/keyboards/keybo
 	cd csharp/keyboards && dotnet publish -r linux-x64 -c Release -o ${SERVICE}
 	mv csharp/keyboards/${SERVICE}/${SERVICE} ${SERVICE}
 
-${DESTDIR}/usr/bin/keyboard-color: release
-	mkdir -p ${DESTDIR}/bin
-	cp release ${DESTDIR}/bin/keyboard-color
+${BIN}: release
+	mkdir -p ${shell dirname ${BIN}}
+	cp release ${BIN}
 
-${DESTDIR}/lib/systemd/system/keyboard-colors.service: keyboard-colors.service
-	mkdir -p ${DESTDIR}/etc/systemd/system
-	cp keyboard-colors.service ${DESTDIR}/etc/systemd/system/keyboard-colors.service
+${UNIT}: keyboard-colors.service
+	mkdir -p ${shell dirname ${UNIT}}
+	cp keyboard-colors.service ${UNIT}
 
-${DESTDIR}/etc/keyboard-color.json: csharp/keyboards/settings.release.json
-	mkdir -p ${DESTDIR}/etc
-	cp csharp/keyboards/settings.release.json ${DESTDIR}/etc/keyboard-color.json
+${CONFIG}: csharp/keyboards/settings.release.json
+	mkdir -p ${shell dirname ${CONFIG}}
+	cp csharp/keyboards/settings.release.json ${CONFIG}
 
-${DESTDIR}/usr/share/doc/s76-keyboard-colors/copyright: LICENSE
-	cp LICENSE ${DESTDIR}/usr/share/doc/s76-keyboard-colors/copyright
+${COPYRIGHT}: LICENSE
+	mkdir -p ${shell dirname ${COPYRIGHT}}
+	cp LICENSE ${COPYRIGHT}
 
 package.deb: deb/usr/loca/bin/keyboard-color deb/etc/systemd/system/keyboard-colors.service deb/etc/keyboard-color.json deb/DEBIAN/control
 	./version
@@ -33,12 +38,11 @@ package.deb: deb/usr/loca/bin/keyboard-color deb/etc/systemd/system/keyboard-col
 clean:
 	cd csharp/keyboards && dotnet clean
 	cd csharp/version && dotnet clean
-	rm -rf ${SERVICE} deb/etc deb/usr release version package.deb
-	git clean -fd
+	rm -rf ${SERVICE} release version package.deb
 
 version: csharp/version/*.cs csharp/version/version.csproj
 	cd csharp/version && dotnet publish -r linux-x64 -c Release -o version
 	mv csharp/version/version/version version
 
-install: ${DESTDIR}/usr/bin/keyboard-color ${DESTDIR}/lib/systemd/system/keyboard-colors.service ${DESTDIR}/etc/keyboard-color.json debian/control debian/changelog debian/rules
+install: debian/control debian/changelog debian/rules ${COPYRIGHT} ${CONFIG} ${UNIT} ${BIN}
 	

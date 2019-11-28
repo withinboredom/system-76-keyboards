@@ -1,7 +1,8 @@
 Source: s76-keyboard-colors
-Maintainer: Rob Landers <landers.robert@gmail.com>
-Build-Depends: debhelper (>= 8.0.0)
-Standards-Version: 4.4.1.1
+Maintainer: Robert Landers <landers.robert@gmail.com>
+Build-Depends: debhelper (>= 9), dh-systemd
+Standards-Version: 4.1.4
+Vcs-git: git://github.com:withinboredom/system-76-keyboards.git
 Section: utils
 
 Package: s76-keyboard-colors

@@ -2,7 +2,7 @@
 Description=System76 Keyboard Colors
 [Service]
 Type=simple
-ExecStart=/usr/local/bin/keyboard-color run -c /etc/keyboard-color.json
+ExecStart=/usr/bin/keyboard-color run -c /etc/keyboard-color.json
 PIDFile=/run/keyboard-colors.pid
 [Install]
 WantedBy=multi-user.target
