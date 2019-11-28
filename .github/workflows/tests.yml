@@ -56,3 +56,8 @@ jobs:
         with:
           name: package.deb
           path: package.deb
+      - name: Save exe as artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: keyboard-color
+          path: release
