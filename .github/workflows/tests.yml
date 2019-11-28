@@ -45,6 +45,10 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 3.0.101
+      - name: apt update
+        run: apt-get update
+      - name: install deps
+        run: apt-get install -y build-essentials gnupg pbuilder ubuntu-dev-tools apt-file dh-make bzr-builddeb
       - name: Build Unsigned Deb
         run: make package.deb
       - name: Save deb as artifact
