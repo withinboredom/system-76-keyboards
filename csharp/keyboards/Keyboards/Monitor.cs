@@ -9,7 +9,7 @@ namespace keyboards.Keyboards
 {
     public class Monitor : Keyboard
     {
-        private readonly MonitorConfiguration _monitorConfiguration = new MonitorConfiguration();
+        private readonly MonitorConfiguration _monitorConfiguration;
 
         public Monitor(IControlContainer container, IConfiguration configuration) : base(container)
         {
@@ -17,12 +17,7 @@ namespace keyboards.Keyboards
             Init(container);
         }
 
-        public Monitor(IControlContainer container) : base(container)
-        {
-            Init(container);
-        }
-
-        private IMonitor MonitorFromBreakpoint(IControlContainer container, Breakpoints p)
+        private static IMonitor MonitorFromBreakpoint(IControlContainer container, Breakpoints p)
         {
             return p.Name switch
             {
@@ -58,6 +53,7 @@ namespace keyboards.Keyboards
             };
         }
 
+        // ReSharper disable once ClassNeverInstantiated.Local
         private class MonitorConfiguration
         {
             public Breakpoints Cpu { get; } = new Breakpoints
