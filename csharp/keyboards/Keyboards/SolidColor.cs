@@ -7,16 +7,11 @@ namespace keyboards.Keyboards
     /// <inheritdoc />
     public class SolidColor : Keyboard
     {
-        private readonly SolidColorConfiguration _colorConfiguration = new SolidColorConfiguration();
+        private readonly SolidColorConfiguration _colorConfiguration;
 
         public SolidColor(IControlContainer container, IConfiguration configuration) : base(container)
         {
             _colorConfiguration = configuration.GetSection("SolidColor").Get<SolidColorConfiguration>();
-            Init();
-        }
-
-        public SolidColor(IControlContainer container) : base(container)
-        {
             Init();
         }
 
@@ -30,6 +25,7 @@ namespace keyboards.Keyboards
             };
         }
 
+        // ReSharper disable once ClassNeverInstantiated.Local
         private class SolidColorConfiguration
         {
             public string LeftOrSingle { get; } = "#ABABAB";

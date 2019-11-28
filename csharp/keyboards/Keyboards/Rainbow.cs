@@ -9,19 +9,11 @@ namespace keyboards.Keyboards
     /// </summary>
     public class Rainbow : Keyboard
     {
-        private readonly RainbowConfiguration _configuration = new RainbowConfiguration();
+        private readonly RainbowConfiguration _configuration;
 
         public Rainbow(IControlContainer container, IConfiguration options) : base(container)
         {
             _configuration = options.GetSection("Rainbow").Get<RainbowConfiguration>();
-            Init(container);
-        }
-
-        /// <summary>
-        ///     Construct the rainbow!
-        /// </summary>
-        public Rainbow(IControlContainer container) : base(container)
-        {
             Init(container);
         }
 
@@ -38,6 +30,7 @@ namespace keyboards.Keyboards
             };
         }
 
+        // ReSharper disable once ClassNeverInstantiated.Local
         private class RainbowConfiguration
         {
             public double RedPhase { get; } = 0.0003;

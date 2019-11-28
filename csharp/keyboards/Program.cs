@@ -12,6 +12,7 @@ using Monitor = keyboards.Keyboards.Monitor;
 
 namespace keyboards
 {
+    // ReSharper disable once ClassNeverInstantiated.Global
     internal class Program
     {
         private static readonly IFile PidFile = new SpecialFile("/run/keyboard-colors.pid");
@@ -45,11 +46,10 @@ namespace keyboards
             return arr.ToArray();
         }
 
-        public static bool ParseError(string key, string reason)
+        private static void ParseError(string key, string reason)
         {
             Console.Error.WriteLine($"Unable to parse {key}: {reason}");
             Environment.Exit(1);
-            return true;
         }
 
         private static Keyboard GetKeyboard(IControlContainer container, IConfiguration configuration)
@@ -62,7 +62,7 @@ namespace keyboards
                 ParseError("DimOnSleep", "DimOnSleep must be a boolean");
 
             var filters = GetFilters(configuration.GetSection("Filters"), dim, container);
-            Keyboard keyboard = null;
+            Keyboard keyboard;
 
             switch (configuration.GetSection("Mode").Value)
             {
@@ -86,7 +86,7 @@ namespace keyboards
             return keyboard;
         }
 
-        private static int RunOrInstall(string[] args, Options options)
+        private static int RunOrInstall(Options options)
         {
             var configuration = new ConfigurationBuilder()
                 .AddEnvironmentVariables()
@@ -123,7 +123,7 @@ namespace keyboards
 
             try
             {
-                Task.WaitAll(new[] {kb.Run(_token)}, _token);
+                Task.WaitAll(new Task[] {kb.Run(_token)}, _token);
                 return 0;
             }
             catch (OperationCanceledException)
@@ -156,12 +156,10 @@ namespace keyboards
                     PidFile.Delete();
             };
 
-            var container = new ControlContainer();
-
             return Parser.Default
                 .ParseArguments<RunOptions, StopOptions>(args)
                 .MapResult(
-                    (RunOptions o) => RunOrInstall(args, o),
+                    (RunOptions o) => RunOrInstall(o),
                     (StopOptions o) =>
                     {
                         Process.Start("systemctl", "stop keyboard-colors.service")?.WaitForExit();
@@ -171,7 +169,7 @@ namespace keyboards
                 );
         }
 
-        internal class Options
+        private class Options
         {
             [Option('c', "config", Default = "/etc/keyboard-colors.json",
                 HelpText = "Set the configuration file to load")]
@@ -179,12 +177,14 @@ namespace keyboards
         }
 
         [Verb("run", HelpText = "Run the keyboard colors service")]
-        internal class RunOptions : Options
+        // ReSharper disable once ClassNeverInstantiated.Local
+        private class RunOptions : Options
         {
         }
 
         [Verb("stop", HelpText = "Stop the currently running service")]
-        internal class StopOptions : Options
+        // ReSharper disable once ClassNeverInstantiated.Local
+        private class StopOptions : Options
         {
         }
     }
