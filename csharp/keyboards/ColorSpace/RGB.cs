@@ -83,7 +83,7 @@ namespace keyboards.ColorSpace
         /// <param name="other">The color to convert</param>
         public Rgb(Hsb other)
         {
-            double r = 0, b = 0, g = 0;
+            double r, b, g;
 
             if (other.Brightness < 0)
             {
