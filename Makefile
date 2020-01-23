@@ -1,9 +1,7 @@
-.PHONY: clean
-
 SERVICE = keyboard-color
 BIN = ${DESTDIR}/usr/bin/keyboard-color
 UNIT = ${DESTDIR}/lib/systemd/system/keyboard-colors.service
-CONFIG = ${DESTDIR}/etc/keyboard-color.json
+CONFIG = ${DESTDIR}/etc/keyboard-colors.json
 COPYRIGHT = ${DESTDIR}/usr/share/doc/s76-keyboard-colors/copyright
 
 release: csharp/keyboards/*.cs csharp/keyboards/*/*.cs csharp/keyboards/keyboards.csproj version
@@ -11,23 +9,23 @@ release: csharp/keyboards/*.cs csharp/keyboards/*/*.cs csharp/keyboards/keyboard
 	${MAKE} ${SERVICE}
 	mv ${SERVICE} release
 
-${SERVICE}: csharp/keyboards/*.cs csharp/keyboards/*/*.cs csharp/keyboards/keyboards.csproj
+$(SERVICE): csharp/keyboards/*.cs csharp/keyboards/*/*.cs csharp/keyboards/keyboards.csproj
 	cd csharp/keyboards && dotnet publish -r linux-x64 -c Release -o ${SERVICE}
 	mv csharp/keyboards/${SERVICE}/${SERVICE} ${SERVICE}
 
-${BIN}: release
+$(BIN): release
 	mkdir -p ${shell dirname ${BIN}}
 	cp release ${BIN}
 
-${UNIT}: keyboard-colors.service
+$(UNIT): keyboard-colors.service
 	mkdir -p ${shell dirname ${UNIT}}
 	cp keyboard-colors.service ${UNIT}
 
-${CONFIG}: csharp/keyboards/settings.release.json
+$(CONFIG): csharp/keyboards/settings.release.json
 	mkdir -p ${shell dirname ${CONFIG}}
 	cp csharp/keyboards/settings.release.json ${CONFIG}
 
-${COPYRIGHT}: LICENSE
+$(COPYRIGHT): LICENSE
 	mkdir -p ${shell dirname ${COPYRIGHT}}
 	cp LICENSE ${COPYRIGHT}
 
@@ -42,9 +40,11 @@ clean:
 	cd csharp/version && dotnet clean
 	cd csharp/UnitTests && dotnet clean
 	rm -rf ${SERVICE} release version package.deb
+.PHONY: clean
 
 version: csharp/version/*.cs csharp/version/version.csproj
 	cd csharp/version && dotnet publish -r linux-x64 -c Release -o version
 	mv csharp/version/version/version version
 
-install: debian/control debian/changelog debian/rules ${COPYRIGHT} ${CONFIG} ${UNIT} ${BIN}
+install: debian/control debian/changelog debian/rules $(COPYRIGHT) $(CONFIG) $(UNIT) $(BIN)
+.PHONY: install
