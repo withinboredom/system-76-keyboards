@@ -5,21 +5,37 @@ namespace keyboards
 {
     public static class Installer
     {
+        internal static string ActiveDisplay { get; set; }
+
         [DllImport("libX11")]
         private static extern IntPtr XOpenDisplay(string displayName);
 
         [DllImport("libX11")]
         private static extern void XCloseDisplay(IntPtr display);
 
-        internal static bool RootHasPermission()
+        private static bool CheckAccessToDisplay(string d)
         {
             var hasAccess = true;
-            var display = XOpenDisplay(":0");
+            var display = XOpenDisplay(d);
             if (display == IntPtr.Zero) hasAccess = false;
 
-            XCloseDisplay(display);
+            if (hasAccess)
+                XCloseDisplay(display);
 
             return hasAccess;
+        }
+
+        internal static bool RootHasPermission()
+        {
+            for (var display = 0; display < 10; display++)
+            {
+                if (!CheckAccessToDisplay($":{display}")) continue;
+
+                ActiveDisplay = $":{display}";
+                return true;
+            }
+
+            return false;
         }
 
         private static bool IsInProfile()
