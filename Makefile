@@ -35,6 +35,13 @@ $(COPYRIGHT): LICENSE
 package.deb: ../s76-keyboard-colors_1.0_amd64.deb
 	cp ../s76-keyboard-colors_1.0_amd64.deb package.deb
 
+manual.tgz: release keyboard-colors.service csharp/keyboards/settings.release.json
+	mkdir -p manual
+	cp -f release manual/
+	cp -f keyboard-colors.server manual/
+	cp -f csharp/keyboards/settings.release.json
+	tar -cvzf manual.tgz manual
+
 clean:
 	cd csharp/keyboards && dotnet clean
 	cd csharp/version && dotnet clean
