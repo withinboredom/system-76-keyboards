@@ -39,7 +39,7 @@ manual.tgz: release keyboard-colors.service csharp/keyboards/settings.release.js
 	mkdir -p manual
 	cp -f release manual/
 	cp -f keyboard-colors.service manual/
-	cp -f csharp/keyboards/settings.release.json
+	cp -f csharp/keyboards/settings.release.json manual/
 	tar -cvzf manual.tgz manual
 
 clean:
