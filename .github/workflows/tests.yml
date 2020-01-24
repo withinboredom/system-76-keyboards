@@ -61,3 +61,25 @@ jobs:
         with:
           name: keyboard-color
           path: release
+  
+  manual-install:
+    
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v1
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.0.101
+      - name: apt update
+        run: sudo apt-get update
+      - name: install deps
+        run: sudo apt-get install -y build-essential devscripts lintian debhelper dh-systemd
+      - name: Build Unsigned Deb
+        run: make manual.tgz
+      - name: Save manual.tgz as artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: manual.tgz
+          path: manual.tgz
