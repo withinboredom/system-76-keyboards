@@ -3,7 +3,7 @@ s76-keyboard-colors (1.1.0) UNRELEASED; urgency=medium
   * Fixes an issue with the main display not being :0
   * Fixes the configuration filename 
 
- -- Rob Landers <withinboredom@pop-os.localdomain>  Fri, 24 Jan 2020 01:08:17 +0100
+ -- Rob Landers <landers.robert@gmail.com>  Fri, 24 Jan 2020 01:33:35 +0100
 
 s76-keyboard-colors (1.0) unstable; urgency=medium
 
