@@ -33,7 +33,7 @@ $(COPYRIGHT): LICENSE
 	debuild -b -us -uc
 
 package.deb: ../s76-keyboard-colors_1.0_amd64.deb
-	cp ../s76-keyboard-colors_1.0_amd64.deb package.deb
+	cp ../s76-keyboard-colors_1.1.0_amd64.deb package.deb
 
 manual.tgz: release keyboard-colors.service csharp/keyboards/settings.release.json
 	mkdir -p manual
