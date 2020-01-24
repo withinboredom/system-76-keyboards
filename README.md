@@ -6,31 +6,22 @@
 
 Create a floating rainbow effect that moves across your keyboard!
 
-# Installation
+# Installation (for debian/pop-os/ubuntu)
 
-1. Download the [latest and greatest](https://github.com/withinboredom/system-76-keyboards/releases)
-1. Make it executable: `chmod +x ./keyboard-color`
-1. Take it on a test drive: `sudo ./keyboard-color rainbow`
-1. Get some help: `sudo ./keyboard-color help`
-1. Once you've got it how you like it, run it with `--install`, like `sudo ./keyboard-color rainbow --install`
+1. Download the [latest and greatest deb file](https://github.com/withinboredom/system-76-keyboards/releases)
+1. Install the deb file
+1. Configure it `sudo nano /etc/keyboard-colors.json`
+1. Start it up `sudo systemctl restart keyboard-colors`
 1. Profit! 
 
-## Changing modes
+# Installation (other distributions)
 
-- `keyboard-color rainbow`: Show a pretty rainbow that moves across the keyboard
-- `keyboard-color monitor`: Show cpu usage 
-- `keyboard-color solidcolor --color FFAAFF`: Set the color to whatever hex color you want
-
-## Filters
-
-- `keyboard-color MODE --filter WashedOut`: Get a washed out look
-- `keyboard-color MODE --filter BlackWhite`: A terrible attempt at black and white
-- `keyboard-color MODE --filter Hearbeat`: Dim and brighten the keyboard based on cpu usage
-
-## Setting FPS
-
-The default is 10 frames per second, but you may find that it causes considerable CPU usage on your machine (it's about
-5% on my machine with `monitor` mode), you can change it with the `--fps` option. 
+1. Download the `manual.tgz` file from [the releases](https://github.com/withinboredom/system-76-keyboards/releases)
+1. Copy the `keyboard-colors.service` to systemd
+1. Copy `settings.json` to `/etc/keyboard-colors.json`
+1. Copy `keyboard-colors` to `/usr/bin/keyboard-color`
+1. Start it up `sudo systemctl restart keyboard-colors`
+1. Profit!
 
 ## Colors for `monitor`
 
@@ -42,14 +33,6 @@ The default is 10 frames per second, but you may find that it causes considerabl
 # Upgrading
 
 Same as installation, should be smooth.
-
-# Uninstall
-
-```sh
-sudo systemctl stop keyboard-color
-sudo systemctl disable keyboard-color
-sudo rm -f /usr/local/bin/keyboard-color /etc/systemd/system/keyboard-colors.service
-```
 
 # Contributing
 
