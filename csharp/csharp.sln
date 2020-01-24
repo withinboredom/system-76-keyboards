@@ -11,6 +11,7 @@ ProjectSection(SolutionItems) = preProject
 	..\keyboard-colors.service = ..\keyboard-colors.service
 	..\VERSION = ..\VERSION
 	..\.github\workflows\tests.yml = ..\.github\workflows\tests.yml
+	..\LICENSE = ..\LICENSE
 EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "version", "version\version.csproj", "{47D800E0-CE45-4A54-A05D-D3A1B6B3D3A9}"

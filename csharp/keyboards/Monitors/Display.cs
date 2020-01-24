@@ -45,7 +45,7 @@ namespace keyboards.Monitors
             if (update - _lastUpdate < TimeSpan.FromSeconds(5)) return Task.FromResult(_lastReading);
             _lastUpdate = update;
 
-            var display = XOpenDisplay(":0");
+            var display = XOpenDisplay(Installer.ActiveDisplay);
             if (display == IntPtr.Zero)
             {
                 _lastReading = 100D;

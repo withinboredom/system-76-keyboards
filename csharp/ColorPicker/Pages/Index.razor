@@ -2,6 +2,7 @@
 @using keyboards
 @using keyboards.ColorSpace
 @using keyboards.Filters
+
 @functions
 {
     IFile _left
@@ -25,14 +26,11 @@
         }
     }
 
-    IFile _right
-    {
-        get { return LedProvider.GetLedFor(new ControlContainer(), LedProvider.Location.Right); }
-    }
+    IFile _right => LedProvider.GetLedFor(new ControlContainer(), LedProvider.Location.Right);
 
     private void SetColor(string color)
     {
-        var sidel = new keyboards.Sides.Solid(keyboards.ColorSpace.Rgb.FromHex(color))
+        var sidel = new Solid(Rgb.FromHex(color))
         {
             Led = _left
         };
@@ -45,8 +43,9 @@
         sidec.Commit(new List<IFilter>());
         sider.Commit(new List<IFilter>());
     }
-    
+
     private string _leftColor = "#FFFFAA";
+
     protected string LeftColor
     {
         get => _leftColor;
@@ -63,4 +62,4 @@
 
 Welcome to your new app.
 
-<input type="color" @bind="LeftColor" @oninput="@((c) => LeftColor = c.Value.ToString())" />
+<input type="color" @bind="LeftColor" @oninput="@(c => LeftColor = c.Value.ToString())"/>
