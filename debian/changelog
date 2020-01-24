@@ -1,3 +1,10 @@
+s76-keyboard-colors (1.0ubuntu1) UNRELEASED; urgency=medium
+
+  * Fixes an issue with the main display not being :0
+  * Fixes the configuration filename
+
+ -- Rob Landers <withinboredom@pop-os.localdomain>  Fri, 24 Jan 2020 01:02:50 +0100
+
 s76-keyboard-colors (1.0) unstable; urgency=medium
 
   * Initial release.
